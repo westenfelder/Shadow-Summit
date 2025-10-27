@@ -2,3 +2,9 @@
 !.gitignore
 !.README.md
 !main.go
+!main.c
+!rvemu/
+!rvemu/Makefile
+!rvemu/.clang-format
+!rvemu/src
+!rvemu/src/*

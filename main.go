@@ -1,7 +1,8 @@
 package main
 
-import "fmt"
-
 func main() {
-	fmt.Println("Hello Risky Science")
+	a := 1
+	b := 2
+	c := a + b
+	_ = c
 }
