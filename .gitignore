@@ -1,6 +1,6 @@
 *
 !.gitignore
-!.README.md
+!README.md
 !main.go
 !main.c
 !rvemu/
