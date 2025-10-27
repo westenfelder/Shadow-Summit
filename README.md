@@ -13,7 +13,7 @@ cd rvemu
 make -j
 
 # Compile
-riscv64-linux-gnu-gcc -O0 -static -o test main.c -nostdlib
+riscv64-linux-gnu-gcc -O0 -static -nostdlib -o test main.c
 
 # Run
 qemu-riscv64 ./test
