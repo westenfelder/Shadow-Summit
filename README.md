@@ -5,7 +5,12 @@
 ## Setup
 ```bash
 # Ubuntu 25.04
-apt install xxd build-essential qemu-user make clang crossbuild-essential-riscv64 gcc-riscv64-unknown-elf binutils-riscv64-unknown-elf -y
+apt install xxd build-essential qemu-user make clang crossbuild-essential-riscv64 gcc-riscv64-unknown-elf binutils-riscv64-unknown-elf python3 python3-pip python3.12-venv -y
+
+# Venv
+python3 -m venv riscv-venv
+source riscv-venv/bin/activate
+pip install -r requirements.txt
 
 # Build
 make

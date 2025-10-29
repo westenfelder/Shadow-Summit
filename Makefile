@@ -8,4 +8,4 @@ all:
 clean:
 	cd rvemu && make clean
 	rm -f rvemu/src/crack.h
-	rm -f crack_x86 crack_riscv
+	rm -f crack*
