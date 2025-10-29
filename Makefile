@@ -1,5 +1,6 @@
 all:
-	riscv64-linux-gnu-gcc -O0 -static -nostdlib -o crack main.c
+	# riscv64-linux-gnu-gcc -O0 -static -nostdlib -o crack main.c
+	riscv64-unknown-elf-gcc -O0 -static -nostdlib -o crack main.c
 	xxd -i crack > crack.h
 	mv crack.h rvemu/src/crack.h
 	cd rvemu && make -j
