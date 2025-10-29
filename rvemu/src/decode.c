@@ -605,31 +605,31 @@ void insn_decode(insn_t *insn, u32 data) {
         u32 imm116 = IMM116(data);
         u32 rs2 = RS2(data);
 
-        if (opcode == 0x0 && funct3 == 0x0) { // LOAD, LB
+        if (opcode == 0x2 && funct3 == 0x0) { // LOAD, LB
             *insn = insn_itype_read(data);
             insn->type = insn_lb;
             return;
-        } else if (opcode == 0x0 && funct3 == 0x1) { // LOAD, LH
+        } else if (opcode == 0x2 && funct3 == 0x1) { // LOAD, LH
             *insn = insn_itype_read(data);
             insn->type = insn_lh;
             return;
-        } else if (opcode == 0x0 && funct3 == 0x2) { // LOAD, LW
+        } else if (opcode == 0x2 && funct3 == 0x2) { // LOAD, LW
             *insn = insn_itype_read(data);
             insn->type = insn_lw;
             return;
-        } else if (opcode == 0x0 && funct3 == 0x3) { // LOAD, LD
+        } else if (opcode == 0x2 && funct3 == 0x3) { // LOAD, LD
             *insn = insn_itype_read(data);
             insn->type = insn_ld;
             return;
-        } else if (opcode == 0x0 && funct3 == 0x4) { // LOAD, LBU
+        } else if (opcode == 0x2 && funct3 == 0x4) { // LOAD, LBU
             *insn = insn_itype_read(data);
             insn->type = insn_lbu;
             return;
-        } else if (opcode == 0x0 && funct3 == 0x5) { // LOAD, LHU
+        } else if (opcode == 0x2 && funct3 == 0x5) { // LOAD, LHU
             *insn = insn_itype_read(data);
             insn->type = insn_lhu;
             return;
-        } else if (opcode == 0x0 && funct3 == 0x6) { // LOAD, LWU
+        } else if (opcode == 0x2 && funct3 == 0x6) { // LOAD, LWU
             *insn = insn_itype_read(data);
             insn->type = insn_lwu;
             return;

@@ -1,6 +1,6 @@
 all:
 # 	riscv64-linux-gnu-gcc -O0 -static -nostdlib -o crack main.c
-	if [ ! -e "crack" ]; then riscv64-linux-gnu-gcc -O0 -static -nostdlib -o crack main.c; fi
+	if [ ! -e "crack" ]; then riscv64-linux-gnu-gcc -march=rv64g -O0 -static -nostdlib -o crack main.c; fi
 	xxd -i crack > crack.h
 	mv crack.h rvemu/src/crack.h
 	cd rvemu && make -j
