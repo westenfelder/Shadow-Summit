@@ -596,6 +596,7 @@ void insn_decode(insn_t *insn, u32 data) {
         }
     }
     unreachable();
+    // HERE
     case 0x3: {
         u32 opcode = OPCODE(data);
         u32 funct3 = FUNCT3(data);
@@ -1152,21 +1153,6 @@ void insn_decode(insn_t *insn, u32 data) {
             insn->type = insn_csrrci;
             return;
         } else {
-            // This block catches all unhandled combinations from the original 'unreachable()' or 'fatal()' calls.
-            // For example:
-            // opcode == 0x0 && funct3 == 0x7
-            // opcode == 0x4 && funct3 == 0x1 && imm116 != 0
-            // opcode == 0x6 && funct3 == 0x2
-            // etc.
-            
-            // We can also check for specific error cases from the original code:
-            if (opcode == 0x4 && (funct3 != 0x0 && funct3 != 0x1 && funct3 != 0x2 && funct3 != 0x3 && funct3 != 0x4 && funct3 != 0x5 && funct3 != 0x6 && funct3 != 0x7)) {
-                fatal("unrecognized funct3");
-            } else if (opcode == 0x6 && (funct3 != 0x0 && funct3 != 0x1 && funct3 != 0x5)) {
-                fatal("unimplemented");
-            }
-            
-            // Default catch-all for all other unhandled paths
             unreachable();
         }
     }
