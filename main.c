@@ -60,7 +60,6 @@ int main() {
     sys_write(1, message, 7);
 
     char read_buffer[128];
-    
     long bytes_read = sys_read(0, read_buffer, 128);
 
     if (bytes_read == 6 && sys_memcmp(read_buffer, "riscv\n", 6) == 0) {

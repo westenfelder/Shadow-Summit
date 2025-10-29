@@ -7,18 +7,13 @@
 # Ubuntu 25.04
 apt install build-essential qemu-user make clang crossbuild-essential-riscv64 gcc-riscv64-unknown-elf binutils-riscv64-unknown-elf -y
 
-# Install rvemu
-git clone https://github.com/ksco/rvemu
-cd rvemu
-make -j
-
-# Compile
-riscv64-linux-gnu-gcc -O0 -static -nostdlib -o test main.c
+# Build
+make
 
 # Run
-qemu-riscv64 ./test
-./rvemu/rvemu ./test
+qemu-riscv64 ./crack_riscv
+./crack_x86
 
 # Disassemble
-riscv64-linux-gnu-objdump -d ./test > test.dis
+riscv64-linux-gnu-objdump -D ./test > test.dis
 ```

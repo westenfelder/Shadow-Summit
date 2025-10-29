@@ -1,6 +1,7 @@
 *
 !.gitignore
 !README.md
+!Makefile
 !main.go
 !main.c
 !rvemu/
