@@ -598,731 +598,576 @@ void insn_decode(insn_t *insn, u32 data) {
     unreachable();
     case 0x3: {
         u32 opcode = OPCODE(data);
-        switch (opcode) {
-        case 0x0: {
-            u32 funct3 = FUNCT3(data);
+        u32 funct3 = FUNCT3(data);
+        u32 funct7 = FUNCT7(data);
+        u32 funct2 = FUNCT2(data);
+        u32 imm116 = IMM116(data);
+        u32 rs2 = RS2(data);
 
+        if (opcode == 0x0 && funct3 == 0x0) { // LOAD, LB
             *insn = insn_itype_read(data);
-            switch (funct3) {
-            case 0x0: /* LB */
-                insn->type = insn_lb;
-                return;
-            case 0x1: /* LH */
-                insn->type = insn_lh;
-                return;
-            case 0x2: /* LW */
-                insn->type = insn_lw;
-                return;
-            case 0x3: /* LD */
-                insn->type = insn_ld;
-                return;
-            case 0x4: /* LBU */
-                insn->type = insn_lbu;
-                return;
-            case 0x5: /* LHU */
-                insn->type = insn_lhu;
-                return;
-            case 0x6: /* LWU */
-                insn->type = insn_lwu;
-                return;
-            default: unreachable();
-            }
-        }
-        unreachable();
-        case 0x1: {
-            u32 funct3 = FUNCT3(data);
-
+            insn->type = insn_lb;
+            return;
+        } else if (opcode == 0x0 && funct3 == 0x1) { // LOAD, LH
             *insn = insn_itype_read(data);
-            switch (funct3) {
-            case 0x2: /* FLW */
-                insn->type = insn_flw;
-                return;
-            case 0x3: /* FLD */
-                insn->type = insn_fld;
-                return;
-            default: unreachable();
-            }
-        }
-        unreachable();
-        case 0x3: {
-            u32 funct3 = FUNCT3(data);
-
-            switch (funct3) {
-            case 0x0: { /* FENCE */
-                insn_t _insn = {0};
-                *insn = _insn;
-                insn->type = insn_fence;
-                return;
-            }
-            case 0x1: { /* FENCE.I */
-                insn_t _insn = {0};
-                *insn = _insn;
-                insn->type = insn_fence_i;
-                return;
-            }
-            default: unreachable();
-            }
-        }
-        unreachable();
-        case 0x4: {
-            u32 funct3 = FUNCT3(data);
-
+            insn->type = insn_lh;
+            return;
+        } else if (opcode == 0x0 && funct3 == 0x2) { // LOAD, LW
             *insn = insn_itype_read(data);
-            switch (funct3) {
-            case 0x0: /* ADDI */
-                insn->type = insn_addi;
-                return;
-            case 0x1: {
-                u32 imm116 = IMM116(data);
-                if (imm116 == 0) { /* SLLI */
-                    insn->type = insn_slli;
-                } else {
-                    unreachable();
-                }
-                return;
-            }
-            unreachable();
-            case 0x2: /* SLTI */
-                insn->type = insn_slti;
-                return;
-            case 0x3: /* SLTIU */
-                insn->type = insn_sltiu;
-                return;
-            case 0x4: /* XORI */
-                insn->type = insn_xori;
-                return;
-            case 0x5: {
-                u32 imm116 = IMM116(data);
-
-                if (imm116 == 0x0) { /* SRLI */
-                    insn->type = insn_srli;
-                } else if (imm116 == 0x10) { /* SRAI */
-                    insn->type = insn_srai;
-                } else {
-                    unreachable();
-                }
-                return;
-            }
-            unreachable();
-            case 0x6: /* ORI */
-                insn->type = insn_ori;
-                return;
-            case 0x7: /* ANDI */
-                insn->type = insn_andi;
-                return;
-            default: fatal("unrecognized funct3");
-            }
-        }
-        unreachable();
-        case 0x5: /* AUIPC */
+            insn->type = insn_lw;
+            return;
+        } else if (opcode == 0x0 && funct3 == 0x3) { // LOAD, LD
+            *insn = insn_itype_read(data);
+            insn->type = insn_ld;
+            return;
+        } else if (opcode == 0x0 && funct3 == 0x4) { // LOAD, LBU
+            *insn = insn_itype_read(data);
+            insn->type = insn_lbu;
+            return;
+        } else if (opcode == 0x0 && funct3 == 0x5) { // LOAD, LHU
+            *insn = insn_itype_read(data);
+            insn->type = insn_lhu;
+            return;
+        } else if (opcode == 0x0 && funct3 == 0x6) { // LOAD, LWU
+            *insn = insn_itype_read(data);
+            insn->type = insn_lwu;
+            return;
+        } else if (opcode == 0x1 && funct3 == 0x2) { // FLW
+            *insn = insn_itype_read(data);
+            insn->type = insn_flw;
+            return;
+        } else if (opcode == 0x1 && funct3 == 0x3) { // FLD
+            *insn = insn_itype_read(data);
+            insn->type = insn_fld;
+            return;
+        } else if (opcode == 0x3 && funct3 == 0x0) { // FENCE
+            insn_t _insn = {0};
+            *insn = _insn;
+            insn->type = insn_fence;
+            return;
+        } else if (opcode == 0x3 && funct3 == 0x1) { // FENCE.I
+            insn_t _insn = {0};
+            *insn = _insn;
+            insn->type = insn_fence_i;
+            return;
+        } else if (opcode == 0x4 && funct3 == 0x0) { // OP-IMM, ADDI
+            *insn = insn_itype_read(data);
+            insn->type = insn_addi;
+            return;
+        } else if (opcode == 0x4 && funct3 == 0x1 && imm116 == 0) { // OP-IMM, SLLI
+            *insn = insn_itype_read(data);
+            insn->type = insn_slli;
+            return;
+        } else if (opcode == 0x4 && funct3 == 0x2) { // OP-IMM, SLTI
+            *insn = insn_itype_read(data);
+            insn->type = insn_slti;
+            return;
+        } else if (opcode == 0x4 && funct3 == 0x3) { // OP-IMM, SLTIU
+            *insn = insn_itype_read(data);
+            insn->type = insn_sltiu;
+            return;
+        } else if (opcode == 0x4 && funct3 == 0x4) { // OP-IMM, XORI
+            *insn = insn_itype_read(data);
+            insn->type = insn_xori;
+            return;
+        } else if (opcode == 0x4 && funct3 == 0x5 && imm116 == 0x0) { // OP-IMM, SRLI
+            *insn = insn_itype_read(data);
+            insn->type = insn_srli;
+            return;
+        } else if (opcode == 0x4 && funct3 == 0x5 && imm116 == 0x10) { // OP-IMM, SRAI
+            *insn = insn_itype_read(data);
+            insn->type = insn_srai;
+            return;
+        } else if (opcode == 0x4 && funct3 == 0x6) { // OP-IMM, ORI
+            *insn = insn_itype_read(data);
+            insn->type = insn_ori;
+            return;
+        } else if (opcode == 0x4 && funct3 == 0x7) { // OP-IMM, ANDI
+            *insn = insn_itype_read(data);
+            insn->type = insn_andi;
+            return;
+        } else if (opcode == 0x5) { // AUIPC
             *insn = insn_utype_read(data);
             insn->type = insn_auipc;
             return;
-        case 0x6: {
-            u32 funct3 = FUNCT3(data);
-            u32 funct7 = FUNCT7(data);
-
+        } else if (opcode == 0x6 && funct3 == 0x0) { // ADDIW
             *insn = insn_itype_read(data);
-
-            switch (funct3) {
-            case 0x0: /* ADDIW */
-                insn->type = insn_addiw;
-                return;
-            case 0x1: /* SLLIW */
-                assert(funct7 == 0);
-                insn->type = insn_slliw;
-                return;
-            case 0x5: {
-                switch (funct7) {
-                case 0x0: /* SRLIW */
-                    insn->type = insn_srliw;
-                    return;
-                case 0x20: /* SRAIW */
-                    insn->type = insn_sraiw;
-                    return;
-                default: unreachable();
-                }
-            }
-            unreachable();
-            default: fatal("unimplemented");
-            }
-        }
-        unreachable();
-        case 0x8: {
-            u32 funct3 = FUNCT3(data);
-
+            insn->type = insn_addiw;
+            return;
+        } else if (opcode == 0x6 && funct3 == 0x1) { // SLLIW
+            *insn = insn_itype_read(data);
+            assert(funct7 == 0);
+            insn->type = insn_slliw;
+            return;
+        } else if (opcode == 0x6 && funct3 == 0x5 && funct7 == 0x0) { // SRLIW
+            *insn = insn_itype_read(data);
+            insn->type = insn_srliw;
+            return;
+        } else if (opcode == 0x6 && funct3 == 0x5 && funct7 == 0x20) { // SRAIW
+            *insn = insn_itype_read(data);
+            insn->type = insn_sraiw;
+            return;
+        } else if (opcode == 0x8 && funct3 == 0x0) { // STORE, SB
             *insn = insn_stype_read(data);
-            switch (funct3) {
-            case 0x0: /* SB */
-                insn->type = insn_sb;
-                return;
-            case 0x1: /* SH */
-                insn->type = insn_sh;
-                return;
-            case 0x2: /* SW */
-                insn->type = insn_sw;
-                return;
-            case 0x3: /* SD */
-                insn->type = insn_sd;
-                return;
-            default: unreachable();
-            }
-        }
-        unreachable();
-        case 0x9: {
-            u32 funct3 = FUNCT3(data);
-
+            insn->type = insn_sb;
+            return;
+        } else if (opcode == 0x8 && funct3 == 0x1) { // STORE, SH
             *insn = insn_stype_read(data);
-            switch (funct3) {
-            case 0x2: /* FSW */
-                insn->type = insn_fsw;
-                return;
-            case 0x3: /* FSD */
-                insn->type = insn_fsd;
-                return;
-            default: unreachable();
-            }
-        }
-        unreachable();
-        case 0xc: {
+            insn->type = insn_sh;
+            return;
+        } else if (opcode == 0x8 && funct3 == 0x2) { // STORE, SW
+            *insn = insn_stype_read(data);
+            insn->type = insn_sw;
+            return;
+        } else if (opcode == 0x8 && funct3 == 0x3) { // STORE, SD
+            *insn = insn_stype_read(data);
+            insn->type = insn_sd;
+            return;
+        } else if (opcode == 0x9 && funct3 == 0x2) { // FSW
+            *insn = insn_stype_read(data);
+            insn->type = insn_fsw;
+            return;
+        } else if (opcode == 0x9 && funct3 == 0x3) { // FSD
+            *insn = insn_stype_read(data);
+            insn->type = insn_fsd;
+            return;
+        } else if (opcode == 0xc && funct7 == 0x0 && funct3 == 0x0) { // OP, ADD
             *insn = insn_rtype_read(data);
-
-            u32 funct3 = FUNCT3(data);
-            u32 funct7 = FUNCT7(data);
-
-            switch (funct7) {
-            case 0x0: {
-                switch (funct3) {
-                case 0x0: /* ADD */
-                    insn->type = insn_add;
-                    return;
-                case 0x1: /* SLL */
-                    insn->type = insn_sll;
-                    return;
-                case 0x2: /* SLT */
-                    insn->type = insn_slt;
-                    return;
-                case 0x3: /* SLTU */
-                    insn->type = insn_sltu;
-                    return;
-                case 0x4: /* XOR */
-                    insn->type = insn_xor;
-                    return;
-                case 0x5: /* SRL */
-                    insn->type = insn_srl;
-                    return;
-                case 0x6: /* OR */
-                    insn->type = insn_or;
-                    return;
-                case 0x7: /* AND */
-                    insn->type = insn_and;
-                    return;
-                default: unreachable();
-                }
-            }
-            unreachable();
-            case 0x1: {
-                switch (funct3) {
-                case 0x0: /* MUL */
-                    insn->type = insn_mul;
-                    return;
-                case 0x1: /* MULH */
-                    insn->type = insn_mulh;
-                    return;
-                case 0x2: /* MULHSU */
-                    insn->type = insn_mulhsu;
-                    return;
-                case 0x3: /* MULHU */
-                    insn->type = insn_mulhu;
-                    return;
-                case 0x4: /* DIV */
-                    insn->type = insn_div;
-                    return;
-                case 0x5: /* DIVU */
-                    insn->type = insn_divu;
-                    return;
-                case 0x6: /* REM */
-                    insn->type = insn_rem;
-                    return;
-                case 0x7: /* REMU */
-                    insn->type = insn_remu;
-                    return;
-                default: unreachable();
-                }
-            }
-            unreachable();
-            case 0x20: {
-                switch (funct3) {
-                case 0x0: /* SUB */
-                    insn->type = insn_sub;
-                    return;
-                case 0x5: /* SRA */
-                    insn->type = insn_sra;
-                    return;
-                default: unreachable();
-                }
-            }
-            unreachable();
-            default: unreachable();
-            }
-        }
-        unreachable();
-        case 0xd: /* LUI */
+            insn->type = insn_add;
+            return;
+        } else if (opcode == 0xc && funct7 == 0x0 && funct3 == 0x1) { // OP, SLL
+            *insn = insn_rtype_read(data);
+            insn->type = insn_sll;
+            return;
+        } else if (opcode == 0xc && funct7 == 0x0 && funct3 == 0x2) { // OP, SLT
+            *insn = insn_rtype_read(data);
+            insn->type = insn_slt;
+            return;
+        } else if (opcode == 0xc && funct7 == 0x0 && funct3 == 0x3) { // OP, SLTU
+            *insn = insn_rtype_read(data);
+            insn->type = insn_sltu;
+            return;
+        } else if (opcode == 0xc && funct7 == 0x0 && funct3 == 0x4) { // OP, XOR
+            *insn = insn_rtype_read(data);
+            insn->type = insn_xor;
+            return;
+        } else if (opcode == 0xc && funct7 == 0x0 && funct3 == 0x5) { // OP, SRL
+            *insn = insn_rtype_read(data);
+            insn->type = insn_srl;
+            return;
+        } else if (opcode == 0xc && funct7 == 0x0 && funct3 == 0x6) { // OP, OR
+            *insn = insn_rtype_read(data);
+            insn->type = insn_or;
+            return;
+        } else if (opcode == 0xc && funct7 == 0x0 && funct3 == 0x7) { // OP, AND
+            *insn = insn_rtype_read(data);
+            insn->type = insn_and;
+            return;
+        } else if (opcode == 0xc && funct7 == 0x1 && funct3 == 0x0) { // OP, MUL
+            *insn = insn_rtype_read(data);
+            insn->type = insn_mul;
+            return;
+        } else if (opcode == 0xc && funct7 == 0x1 && funct3 == 0x1) { // OP, MULH
+            *insn = insn_rtype_read(data);
+            insn->type = insn_mulh;
+            return;
+        } else if (opcode == 0xc && funct7 == 0x1 && funct3 == 0x2) { // OP, MULHSU
+            *insn = insn_rtype_read(data);
+            insn->type = insn_mulhsu;
+            return;
+        } else if (opcode == 0xc && funct7 == 0x1 && funct3 == 0x3) { // OP, MULHU
+            *insn = insn_rtype_read(data);
+            insn->type = insn_mulhu;
+            return;
+        } else if (opcode == 0xc && funct7 == 0x1 && funct3 == 0x4) { // OP, DIV
+            *insn = insn_rtype_read(data);
+            insn->type = insn_div;
+            return;
+        } else if (opcode == 0xc && funct7 == 0x1 && funct3 == 0x5) { // OP, DIVU
+            *insn = insn_rtype_read(data);
+            insn->type = insn_divu;
+            return;
+        } else if (opcode == 0xc && funct7 == 0x1 && funct3 == 0x6) { // OP, REM
+            *insn = insn_rtype_read(data);
+            insn->type = insn_rem;
+            return;
+        } else if (opcode == 0xc && funct7 == 0x1 && funct3 == 0x7) { // OP, REMU
+            *insn = insn_rtype_read(data);
+            insn->type = insn_remu;
+            return;
+        } else if (opcode == 0xc && funct7 == 0x20 && funct3 == 0x0) { // OP, SUB
+            *insn = insn_rtype_read(data);
+            insn->type = insn_sub;
+            return;
+        } else if (opcode == 0xc && funct7 == 0x20 && funct3 == 0x5) { // OP, SRA
+            *insn = insn_rtype_read(data);
+            insn->type = insn_sra;
+            return;
+        } else if (opcode == 0xd) { // LUI
             *insn = insn_utype_read(data);
             insn->type = insn_lui;
             return;
-        case 0xe: {
+        } else if (opcode == 0xe && funct7 == 0x0 && funct3 == 0x0) { // ADDW
             *insn = insn_rtype_read(data);
-
-            u32 funct3 = FUNCT3(data);
-            u32 funct7 = FUNCT7(data);
-
-            switch (funct7) {
-            case 0x0: {
-                switch (funct3) {
-                case 0x0: /* ADDW */
-                    insn->type = insn_addw;
-                    return;
-                case 0x1: /* SLLW */
-                    insn->type = insn_sllw;
-                    return;
-                case 0x5: /* SRLW */
-                    insn->type = insn_srlw;
-                    return;
-                default: unreachable();
-                }
-            }
-            unreachable();
-            case 0x1: {
-                switch (funct3) {
-                case 0x0: /* MULW */
-                    insn->type = insn_mulw;
-                    return;
-                case 0x4: /* DIVW */
-                    insn->type = insn_divw;
-                    return;
-                case 0x5: /* DIVUW */
-                    insn->type = insn_divuw;
-                    return;
-                case 0x6: /* REMW */
-                    insn->type = insn_remw;
-                    return;
-                case 0x7: /* REMUW */
-                    insn->type = insn_remuw;
-                    return;
-                default: unreachable();
-                }
-            }
-            unreachable();
-            case 0x20: {
-                switch (funct3) {
-                case 0x0: /* SUBW */
-                    insn->type = insn_subw;
-                    return;
-                case 0x5: /* SRAW */
-                    insn->type = insn_sraw;
-                    return;
-                default: unreachable();
-                }
-            }
-            unreachable();
-            default: unreachable();
-            }
-        }
-        unreachable();
-        case 0x10: {
-            u32 funct2 = FUNCT2(data);
-
-            *insn = insn_fprtype_read(data);
-            switch (funct2) {
-            case 0x0: /* FMADD.S */
-                insn->type = insn_fmadd_s;
-                return;
-            case 0x1: /* FMADD.D */
-                insn->type = insn_fmadd_d;
-                return;
-            default: unreachable();
-            }
-        }
-        unreachable();
-        case 0x11: {
-            u32 funct2 = FUNCT2(data);
-
-            *insn = insn_fprtype_read(data);
-            switch (funct2) {
-            case 0x0: /* FMSUB.S */
-                insn->type = insn_fmsub_s;
-                return;
-            case 0x1: /* FMSUB.D */
-                insn->type = insn_fmsub_d;
-                return;
-            default: unreachable();
-            }
-        }
-        unreachable();
-        case 0x12: {
-            u32 funct2 = FUNCT2(data);
-
-            *insn = insn_fprtype_read(data);
-            switch (funct2) {
-            case 0x0: /* FNMSUB.S */
-                insn->type = insn_fnmsub_s;
-                return;
-            case 0x1: /* FNMSUB.D */
-                insn->type = insn_fnmsub_d;
-                return;
-            default: unreachable();
-            }
-        }
-        unreachable();
-        case 0x13: {
-            u32 funct2 = FUNCT2(data);
-
-            *insn = insn_fprtype_read(data);
-            switch (funct2) {
-            case 0x0: /* FNMADD.S */
-                insn->type = insn_fnmadd_s;
-                return;
-            case 0x1: /* FNMADD.D */
-                insn->type = insn_fnmadd_d;
-                return;
-            default: unreachable();
-            }
-        }
-        unreachable();
-        case 0x14: {
-            u32 funct7 = FUNCT7(data);
-
+            insn->type = insn_addw;
+            return;
+        } else if (opcode == 0xe && funct7 == 0x0 && funct3 == 0x1) { // SLLW
             *insn = insn_rtype_read(data);
-            switch (funct7) {
-            case 0x0:  /* FADD.S */
-                insn->type = insn_fadd_s;
-                return;
-            case 0x1:  /* FADD.D */
-                insn->type = insn_fadd_d;
-                return;
-            case 0x4:  /* FSUB.S */
-                insn->type = insn_fsub_s;
-                return;
-            case 0x5:  /* FSUB.D */
-                insn->type = insn_fsub_d;
-                return;
-            case 0x8:  /* FMUL.S */
-                insn->type = insn_fmul_s;
-                return;
-            case 0x9:  /* FMUL.D */
-                insn->type = insn_fmul_d;
-                return;
-            case 0xc:  /* FDIV.S */
-                insn->type = insn_fdiv_s;
-                return;
-            case 0xd:  /* FDIV.D */
-                insn->type = insn_fdiv_d;
-                return;
-            case 0x10: {
-                u32 funct3 = FUNCT3(data);
-
-                switch (funct3) {
-                case 0x0: /* FSGNJ.S */
-                    insn->type = insn_fsgnj_s;
-                    return;
-                case 0x1: /* FSGNJN.S */
-                    insn->type = insn_fsgnjn_s;
-                    return;
-                case 0x2: /* FSGNJX.S */
-                    insn->type = insn_fsgnjx_s;
-                    return;
-                default: unreachable();
-                }
-            }
-            unreachable();
-            case 0x11: {
-                u32 funct3 = FUNCT3(data);
-
-                switch (funct3) {
-                case 0x0: /* FSGNJ.D */
-                    insn->type = insn_fsgnj_d;
-                    return;
-                case 0x1: /* FSGNJN.D */
-                    insn->type = insn_fsgnjn_d;
-                    return;
-                case 0x2: /* FSGNJX.D */
-                    insn->type = insn_fsgnjx_d;
-                    return;
-                default: unreachable();
-                }
-            }
-            unreachable();
-            case 0x14: {
-                u32 funct3 = FUNCT3(data);
-
-                switch (funct3) {
-                case 0x0: /* FMIN.S */
-                    insn->type = insn_fmin_s;
-                    return;
-                case 0x1: /* FMAX.S */
-                    insn->type = insn_fmax_s;
-                    return;
-                default: unreachable();
-                }
-            }
-            unreachable();
-            case 0x15: {
-                u32 funct3 = FUNCT3(data);
-
-                switch (funct3) {
-                case 0x0: /* FMIN.D */
-                    insn->type = insn_fmin_d;
-                    return;
-                case 0x1: /* FMAX.D */
-                    insn->type = insn_fmax_d;
-                    return;
-                default: unreachable();
-                }
-            }
-            unreachable();
-            case 0x20: /* FCVT.S.D */
-                assert(RS2(data) == 1);
-                insn->type = insn_fcvt_s_d;
-                return;
-            case 0x21: /* FCVT.D.S */
-                assert(RS2(data) == 0);
-                insn->type = insn_fcvt_d_s;
-                return;
-            case 0x2c: /* FSQRT.S */
-                assert(insn->rs2 == 0);
-                insn->type = insn_fsqrt_s;
-                return;
-            case 0x2d: /* FSQRT.D */
-                assert(insn->rs2 == 0);
-                insn->type = insn_fsqrt_d;
-                return;
-            case 0x50: {
-                u32 funct3 = FUNCT3(data);
-
-                switch (funct3) {
-                case 0x0: /* FLE.S */
-                    insn->type = insn_fle_s;
-                    return;
-                case 0x1: /* FLT.S */
-                    insn->type = insn_flt_s;
-                    return;
-                case 0x2: /* FEQ.S */
-                    insn->type = insn_feq_s;
-                    return;
-                default: unreachable();
-                }
-            }
-            unreachable();
-            case 0x51: {
-                u32 funct3 = FUNCT3(data);
-
-                switch (funct3) {
-                case 0x0: /* FLE.D */
-                    insn->type = insn_fle_d;
-                    return;
-                case 0x1: /* FLT.D */
-                    insn->type = insn_flt_d;
-                    return;
-                case 0x2: /* FEQ.D */
-                    insn->type = insn_feq_d;
-                    return;
-                default: unreachable();
-                }
-            }
-            unreachable();
-            case 0x60: {
-                u32 rs2 = RS2(data);
-
-                switch (rs2) {
-                case 0x0: /* FCVT.W.S */
-                    insn->type = insn_fcvt_w_s;
-                    return;
-                case 0x1: /* FCVT.WU.S */
-                    insn->type = insn_fcvt_wu_s;
-                    return;
-                case 0x2: /* FCVT.L.S */
-                    insn->type = insn_fcvt_l_s;
-                    return;
-                case 0x3: /* FCVT.LU.S */
-                    insn->type = insn_fcvt_lu_s;
-                    return;
-                default: unreachable();
-                }
-            }
-            unreachable();
-            case 0x61: {
-                u32 rs2 = RS2(data);
-
-                switch (rs2) {
-                case 0x0: /* FCVT.W.D */
-                    insn->type = insn_fcvt_w_d;
-                    return;
-                case 0x1: /* FCVT.WU.D */
-                    insn->type = insn_fcvt_wu_d;
-                    return;
-                case 0x2: /* FCVT.L.D */
-                    insn->type = insn_fcvt_l_d;
-                    return;
-                case 0x3: /* FCVT.LU.D */
-                    insn->type = insn_fcvt_lu_d;
-                    return;
-                default: unreachable();
-                }
-            }
-            unreachable();
-            case 0x68: {
-                u32 rs2 = RS2(data);
-
-                switch (rs2) {
-                case 0x0: /* FCVT.S.W */
-                    insn->type = insn_fcvt_s_w;
-                    return;
-                case 0x1: /* FCVT.S.WU */
-                    insn->type = insn_fcvt_s_wu;
-                    return;
-                case 0x2: /* FCVT.S.L */
-                    insn->type = insn_fcvt_s_l;
-                    return;
-                case 0x3: /* FCVT.S.LU */
-                    insn->type = insn_fcvt_s_lu;
-                    return;
-                default: unreachable();
-                }
-            }
-            unreachable();
-            case 0x69: {
-                u32 rs2 = RS2(data);
-
-                switch (rs2) {
-                case 0x0: /* FCVT.D.W */
-                    insn->type = insn_fcvt_d_w;
-                    return;
-                case 0x1: /* FCVT.D.WU */
-                    insn->type = insn_fcvt_d_wu;
-                    return;
-                case 0x2: /* FCVT.D.L */
-                    insn->type = insn_fcvt_d_l;
-                    return;
-                case 0x3: /* FCVT.D.LU */
-                    insn->type = insn_fcvt_d_lu;
-                    return;
-                default: unreachable();
-                }
-            }
-            unreachable();
-            case 0x70: {
-                assert(RS2(data) == 0);
-                u32 funct3 = FUNCT3(data);
-
-                switch (funct3) {
-                case 0x0: /* FMV.X.W */
-                    insn->type = insn_fmv_x_w;
-                    return;
-                case 0x1: /* FCLASS.S */
-                    insn->type = insn_fclass_s;
-                    return;
-                default: unreachable();
-                }
-            }
-            unreachable();
-            case 0x71: {
-                assert(RS2(data) == 0);
-                u32 funct3 = FUNCT3(data);
-
-                switch (funct3) {
-                case 0x0: /* FMV.X.D */
-                    insn->type = insn_fmv_x_d;
-                    return;
-                case 0x1: /* FCLASS.D */
-                    insn->type = insn_fclass_d;
-                    return;
-                default: unreachable();
-                }
-            }
-            unreachable();
-            case 0x78: /* FMV_W_X */
-                assert(RS2(data) == 0 && FUNCT3(data) == 0);
-                insn->type = insn_fmv_w_x;
-                return;
-            case 0x79: /* FMV_D_X */
-                assert(RS2(data) == 0 && FUNCT3(data) == 0);
-                insn->type = insn_fmv_d_x;
-                return;
-            default: unreachable();
-            }
-        }
-        unreachable();
-        case 0x18: {
+            insn->type = insn_sllw;
+            return;
+        } else if (opcode == 0xe && funct7 == 0x0 && funct3 == 0x5) { // SRLW
+            *insn = insn_rtype_read(data);
+            insn->type = insn_srlw;
+            return;
+        } else if (opcode == 0xe && funct7 == 0x1 && funct3 == 0x0) { // MULW
+            *insn = insn_rtype_read(data);
+            insn->type = insn_mulw;
+            return;
+        } else if (opcode == 0xe && funct7 == 0x1 && funct3 == 0x4) { // DIVW
+            *insn = insn_rtype_read(data);
+            insn->type = insn_divw;
+            return;
+        } else if (opcode == 0xe && funct7 == 0x1 && funct3 == 0x5) { // DIVUW
+            *insn = insn_rtype_read(data);
+            insn->type = insn_divuw;
+            return;
+        } else if (opcode == 0xe && funct7 == 0x1 && funct3 == 0x6) { // REMW
+            *insn = insn_rtype_read(data);
+            insn->type = insn_remw;
+            return;
+        } else if (opcode == 0xe && funct7 == 0x1 && funct3 == 0x7) { // REMUW
+            *insn = insn_rtype_read(data);
+            insn->type = insn_remuw;
+            return;
+        } else if (opcode == 0xe && funct7 == 0x20 && funct3 == 0x0) { // SUBW
+            *insn = insn_rtype_read(data);
+            insn->type = insn_subw;
+            return;
+        } else if (opcode == 0xe && funct7 == 0x20 && funct3 == 0x5) { // SRAW
+            *insn = insn_rtype_read(data);
+            insn->type = insn_sraw;
+            return;
+        } else if (opcode == 0x10 && funct2 == 0x0) { // FMADD.S
+            *insn = insn_fprtype_read(data);
+            insn->type = insn_fmadd_s;
+            return;
+        } else if (opcode == 0x10 && funct2 == 0x1) { // FMADD.D
+            *insn = insn_fprtype_read(data);
+            insn->type = insn_fmadd_d;
+            return;
+        } else if (opcode == 0x11 && funct2 == 0x0) { // FMSUB.S
+            *insn = insn_fprtype_read(data);
+            insn->type = insn_fmsub_s;
+            return;
+        } else if (opcode == 0x11 && funct2 == 0x1) { // FMSUB.D
+            *insn = insn_fprtype_read(data);
+            insn->type = insn_fmsub_d;
+            return;
+        } else if (opcode == 0x12 && funct2 == 0x0) { // FNMSUB.S
+            *insn = insn_fprtype_read(data);
+            insn->type = insn_fnmsub_s;
+            return;
+        } else if (opcode == 0x12 && funct2 == 0x1) { // FNMSUB.D
+            *insn = insn_fprtype_read(data);
+            insn->type = insn_fnmsub_d;
+            return;
+        } else if (opcode == 0x13 && funct2 == 0x0) { // FNMADD.S
+            *insn = insn_fprtype_read(data);
+            insn->type = insn_fnmadd_s;
+            return;
+        } else if (opcode == 0x13 && funct2 == 0x1) { // FNMADD.D
+            *insn = insn_fprtype_read(data);
+            insn->type = insn_fnmadd_d;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x0) { // FADD.S
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fadd_s;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x1) { // FADD.D
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fadd_d;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x4) { // FSUB.S
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fsub_s;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x5) { // FSUB.D
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fsub_d;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x8) { // FMUL.S
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fmul_s;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x9) { // FMUL.D
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fmul_d;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0xc) { // FDIV.S
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fdiv_s;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0xd) { // FDIV.D
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fdiv_d;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x10 && funct3 == 0x0) { // FSGNJ.S
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fsgnj_s;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x10 && funct3 == 0x1) { // FSGNJN.S
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fsgnjn_s;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x10 && funct3 == 0x2) { // FSGNJX.S
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fsgnjx_s;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x11 && funct3 == 0x0) { // FSGNJ.D
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fsgnj_d;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x11 && funct3 == 0x1) { // FSGNJN.D
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fsgnjn_d;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x11 && funct3 == 0x2) { // FSGNJX.D
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fsgnjx_d;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x14 && funct3 == 0x0) { // FMIN.S
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fmin_s;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x14 && funct3 == 0x1) { // FMAX.S
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fmax_s;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x15 && funct3 == 0x0) { // FMIN.D
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fmin_d;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x15 && funct3 == 0x1) { // FMAX.D
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fmax_d;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x20) { // FCVT.S.D
+            *insn = insn_rtype_read(data);
+            assert(RS2(data) == 1);
+            insn->type = insn_fcvt_s_d;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x21) { // FCVT.D.S
+            *insn = insn_rtype_read(data);
+            assert(RS2(data) == 0);
+            insn->type = insn_fcvt_d_s;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x2c) { // FSQRT.S
+            *insn = insn_rtype_read(data);
+            assert(insn->rs2 == 0);
+            insn->type = insn_fsqrt_s;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x2d) { // FSQRT.D
+            *insn = insn_rtype_read(data);
+            assert(insn->rs2 == 0);
+            insn->type = insn_fsqrt_d;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x50 && funct3 == 0x0) { // FLE.S
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fle_s;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x50 && funct3 == 0x1) { // FLT.S
+            *insn = insn_rtype_read(data);
+            insn->type = insn_flt_s;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x50 && funct3 == 0x2) { // FEQ.S
+            *insn = insn_rtype_read(data);
+            insn->type = insn_feq_s;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x51 && funct3 == 0x0) { // FLE.D
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fle_d;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x51 && funct3 == 0x1) { // FLT.D
+            *insn = insn_rtype_read(data);
+            insn->type = insn_flt_d;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x51 && funct3 == 0x2) { // FEQ.D
+            *insn = insn_rtype_read(data);
+            insn->type = insn_feq_d;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x60 && rs2 == 0x0) { // FCVT.W.S
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fcvt_w_s;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x60 && rs2 == 0x1) { // FCVT.WU.S
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fcvt_wu_s;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x60 && rs2 == 0x2) { // FCVT.L.S
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fcvt_l_s;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x60 && rs2 == 0x3) { // FCVT.LU.S
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fcvt_lu_s;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x61 && rs2 == 0x0) { // FCVT.W.D
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fcvt_w_d;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x61 && rs2 == 0x1) { // FCVT.WU.D
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fcvt_wu_d;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x61 && rs2 == 0x2) { // FCVT.L.D
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fcvt_l_d;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x61 && rs2 == 0x3) { // FCVT.LU.D
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fcvt_lu_d;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x68 && rs2 == 0x0) { // FCVT.S.W
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fcvt_s_w;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x68 && rs2 == 0x1) { // FCVT.S.WU
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fcvt_s_wu;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x68 && rs2 == 0x2) { // FCVT.S.L
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fcvt_s_l;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x68 && rs2 == 0x3) { // FCVT.S.LU
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fcvt_s_lu;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x69 && rs2 == 0x0) { // FCVT.D.W
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fcvt_d_w;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x69 && rs2 == 0x1) { // FCVT.D.WU
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fcvt_d_wu;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x69 && rs2 == 0x2) { // FCVT.D.L
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fcvt_d_l;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x69 && rs2 == 0x3) { // FCVT.D.LU
+            *insn = insn_rtype_read(data);
+            insn->type = insn_fcvt_d_lu;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x70 && funct3 == 0x0) { // FMV.X.W
+            *insn = insn_rtype_read(data);
+            assert(RS2(data) == 0);
+            insn->type = insn_fmv_x_w;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x70 && funct3 == 0x1) { // FCLASS.S
+            *insn = insn_rtype_read(data);
+            assert(RS2(data) == 0);
+            insn->type = insn_fclass_s;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x71 && funct3 == 0x0) { // FMV.X.D
+            *insn = insn_rtype_read(data);
+            assert(RS2(data) == 0);
+            insn->type = insn_fmv_x_d;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x71 && funct3 == 0x1) { // FCLASS.D
+            *insn = insn_rtype_read(data);
+            assert(RS2(data) == 0);
+            insn->type = insn_fclass_d;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x78) { // FMV_W_X
+            *insn = insn_rtype_read(data);
+            assert(RS2(data) == 0 && FUNCT3(data) == 0);
+            insn->type = insn_fmv_w_x;
+            return;
+        } else if (opcode == 0x14 && funct7 == 0x79) { // FMV_D_X
+            *insn = insn_rtype_read(data);
+            assert(RS2(data) == 0 && FUNCT3(data) == 0);
+            insn->type = insn_fmv_d_x;
+            return;
+        } else if (opcode == 0x18 && funct3 == 0x0) { // BRANCH, BEQ
             *insn = insn_btype_read(data);
-
-            u32 funct3 = FUNCT3(data);
-            switch (funct3) {
-            case 0x0: /* BEQ */
-                insn->type = insn_beq;
-                return;
-            case 0x1: /* BNE */
-                insn->type = insn_bne;
-                return;
-            case 0x4: /* BLT */
-                insn->type = insn_blt;
-                return;
-            case 0x5: /* BGE */
-                insn->type = insn_bge;
-                return;
-            case 0x6: /* BLTU */
-                insn->type = insn_bltu;
-                return;
-            case 0x7: /* BGEU */
-                insn->type = insn_bgeu;
-                return;
-            default: unreachable();
-            }
-        }
-        unreachable();
-        case 0x19: /* JALR */
+            insn->type = insn_beq;
+            return;
+        } else if (opcode == 0x18 && funct3 == 0x1) { // BRANCH, BNE
+            *insn = insn_btype_read(data);
+            insn->type = insn_bne;
+            return;
+        } else if (opcode == 0x18 && funct3 == 0x4) { // BRANCH, BLT
+            *insn = insn_btype_read(data);
+            insn->type = insn_blt;
+            return;
+        } else if (opcode == 0x18 && funct3 == 0x5) { // BRANCH, BGE
+            *insn = insn_btype_read(data);
+            insn->type = insn_bge;
+            return;
+        } else if (opcode == 0x18 && funct3 == 0x6) { // BRANCH, BLTU
+            *insn = insn_btype_read(data);
+            insn->type = insn_bltu;
+            return;
+        } else if (opcode == 0x18 && funct3 == 0x7) { // BRANCH, BGEU
+            *insn = insn_btype_read(data);
+            insn->type = insn_bgeu;
+            return;
+        } else if (opcode == 0x19) { // JALR
             *insn = insn_itype_read(data);
             insn->type = insn_jalr;
             insn->cont = true;
             return;
-        case 0x1b: /* JAL */
+        } else if (opcode == 0x1b) { // JAL
             *insn = insn_jtype_read(data);
             insn->type = insn_jal;
             insn->cont = true;
             return;
-        case 0x1c: {
-            if (data == 0x73) { /* ECALL */
-                insn->type = insn_ecall;
-                insn->cont = true;
-                return;
-            }
-
-            u32 funct3 = FUNCT3(data);
+        } else if (opcode == 0x1c && data == 0x73) { // SYSTEM, ECALL
+            insn->type = insn_ecall;
+            insn->cont = true;
+            return;
+        } else if (opcode == 0x1c && funct3 == 0x1) { // SYSTEM, CSRRW
             *insn = insn_csrtype_read(data);
-            switch(funct3) {
-            case 0x1: /* CSRRW */
-                insn->type = insn_csrrw;
-                return;
-            case 0x2: /* CSRRS */
-                insn->type = insn_csrrs;
-                return;
-            case 0x3: /* CSRRC */
-                insn->type = insn_csrrc;
-                return;
-            case 0x5: /* CSRRWI */
-                insn->type = insn_csrrwi;
-                return;
-            case 0x6: /* CSRRSI */
-                insn->type = insn_csrrsi;
-                return;
-            case 0x7: /* CSRRCI */
-                insn->type = insn_csrrci;
-                return;
-            default: unreachable();
+            insn->type = insn_csrrw;
+            return;
+        } else if (opcode == 0x1c && funct3 == 0x2) { // SYSTEM, CSRRS
+            *insn = insn_csrtype_read(data);
+            insn->type = insn_csrrs;
+            return;
+        } else if (opcode == 0x1c && funct3 == 0x3) { // SYSTEM, CSRRC
+            *insn = insn_csrtype_read(data);
+            insn->type = insn_csrrc;
+            return;
+        } else if (opcode == 0x1c && funct3 == 0x5) { // SYSTEM, CSRRWI
+            *insn = insn_csrtype_read(data);
+            insn->type = insn_csrrwi;
+            return;
+        } else if (opcode == 0x1c && funct3 == 0x6) { // SYSTEM, CSRRSI
+            *insn = insn_csrtype_read(data);
+            insn->type = insn_csrrsi;
+            return;
+        } else if (opcode == 0x1c && funct3 == 0x7) { // SYSTEM, CSRRCI
+            *insn = insn_csrtype_read(data);
+            insn->type = insn_csrrci;
+            return;
+        } else {
+            // This block catches all unhandled combinations from the original 'unreachable()' or 'fatal()' calls.
+            // For example:
+            // opcode == 0x0 && funct3 == 0x7
+            // opcode == 0x4 && funct3 == 0x1 && imm116 != 0
+            // opcode == 0x6 && funct3 == 0x2
+            // etc.
+            
+            // We can also check for specific error cases from the original code:
+            if (opcode == 0x4 && (funct3 != 0x0 && funct3 != 0x1 && funct3 != 0x2 && funct3 != 0x3 && funct3 != 0x4 && funct3 != 0x5 && funct3 != 0x6 && funct3 != 0x7)) {
+                fatal("unrecognized funct3");
+            } else if (opcode == 0x6 && (funct3 != 0x0 && funct3 != 0x1 && funct3 != 0x5)) {
+                fatal("unimplemented");
             }
-        }
-        unreachable();
-        default: unreachable();
+            
+            // Default catch-all for all other unhandled paths
+            unreachable();
         }
     }
     unreachable();
