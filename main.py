@@ -7,7 +7,10 @@ from Crypto.Util.Padding import pad
 from Crypto.Random import get_random_bytes
 import os
 
-random.seed()
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad
+from Crypto.Random import get_random_bytes
+import os
 
 OPCODE_MAP = {
     0: [0x00, "LOAD"],
@@ -31,6 +34,9 @@ OPCODE_MAP = {
     18: [0x1B, "JAL"],
 }
 
+
+# Shuffle opcode map indices
+random.seed()
 shuffle = list(range(19))
 random.shuffle(shuffle)
 
@@ -49,21 +55,20 @@ static const int shuffle[{len(shuffle)}] = {{
 #endif // SHUFFLE_H
 """
 
+# Write to header
 with open("rvemu/src/shuffle.h", "w") as f:
     f.write(c_header_content)
 
 
-original_filename = 'crack'
-new_filename = 'crack'
+# Patch binary
+with open('crack', 'rb') as f:
 
-with open(original_filename, 'rb') as f:
+    # Get the .text data and offsets
     f.seek(0)
     original_file_data = bytearray(f.read())
     f.seek(0)
     elf = ELFFile(f)
     text_section = elf.get_section_by_name('.text')
-
-    # Get the .text data and offsets
     data = text_section.data()
     base_addr = text_section['sh_addr']
     text_file_offset = text_section['sh_offset']
@@ -71,43 +76,41 @@ with open(original_filename, 'rb') as f:
 
     new_text_data = bytearray()
     offset = 0
-    instructions_swapped = 0
 
     while offset < len(data):
             
         instruction_bytes = data[offset : offset + 4]
 
-        # little-endian
+        # Convert to little-endian
         inst_word = int.from_bytes(instruction_bytes, 'little')
+        current_addr = base_addr + offset
 
         # Get opcode (bits 6-2)
         opcode = (inst_word & 0x7C) >> 2
+        # check for compression
         last_two_bits = inst_word & 0x03
-        current_addr = base_addr + offset
-        
         new_inst_word = inst_word
 
+        # Shuffle
         for i in range(19):
             if opcode == OPCODE_MAP[i][0] and last_two_bits == 0x3:
                 new_inst_word = (inst_word & ~0x7C) | (OPCODE_MAP[shuffle[i]][0] << 2)
-                instructions_swapped+=1
                 break
             
         new_text_data.extend(new_inst_word.to_bytes(4, 'little'))
-            
         offset += 4
 
-    # Replace .text section
+    # Update .text section
     if len(new_text_data) != text_size:
         print("Fatal Error")
         sys.exit(1)
-        
+
     start = text_file_offset
     end = text_file_offset + text_size
     original_file_data[start:end] = new_text_data
 
     # Write new ELF file
-    with open(new_filename, 'wb') as new_f:
+    with open('crack', 'wb') as new_f:
         new_f.write(original_file_data)
 
 

@@ -55,14 +55,31 @@ long sys_memcmp(const void *s1, const void *s2, long n) {
     return 0;
 }
 
+void xor_string(char *data, long len, char key) {
+    for (long i = 0; i < len; i++) {
+        data[i] = data[i] ^ key;
+    }
+}
+
 int main() {
     const char *message = "Input: ";
     sys_write(1, message, 7);
 
+    // flag{Risky-Science}
+    char encoded_flag[] = {
+        0x24, 0x2e, 0x23, 0x25, 0x39, 0x10, 0x2b, 0x31, 0x29, 0x3b,
+        0x6f, 0x11, 0x21, 0x2b, 0x27, 0x2c, 0x21, 0x27, 0x3f, 0x48
+    };
+    
+    char key = 0x42;
+    long flag_len = 20;
+
     char read_buffer[128];
     long bytes_read = sys_read(0, read_buffer, 128);
 
-    if (bytes_read == 20 && sys_memcmp(read_buffer, "flag{Risky-Science}\n", 20) == 0) {
+    xor_string(encoded_flag, flag_len, key);
+
+    if (bytes_read == flag_len && sys_memcmp(read_buffer, encoded_flag, flag_len) == 0) {
         const char *correct_msg = "Correct\n";
         sys_write(1, correct_msg, 8);
     } else {
