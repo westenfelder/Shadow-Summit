@@ -2,7 +2,6 @@
 !.gitignore
 !README.md
 !Makefile
-!main.go
 !main.c
 !main.py
 !requirements.txt
