@@ -12,16 +12,14 @@ endif
 CFLAGS := -march=rv64g -O0 -static -nostdlib -s
 
 all:
-	if [ ! -e "crack" ]; then $(CC) $(CFLAGS) -o crack main.c; fi
+	if [ ! -e "crack" ]; then $(CC) $(CFLAGS) -o crack_riscv main.c; fi
 	python3 -m venv riscv-venv && \
 	riscv-venv/bin/pip install -r requirements.txt && \
 	riscv-venv/bin/python3 main.py
-	mv crack crack.orig && cp crack.enc crack
-	xxd -i crack > crack.h
+	xxd -i crack_riscv_enc > crack.h
 	mv crack.h rvemu/src/crack.h
 	cd rvemu && make -j
 	mv rvemu/rvemu crack_x86
-	mv crack crack_riscv
 clean:
 	cd rvemu && make clean
 	rm -f rvemu/src/crack.h

@@ -7,11 +7,6 @@ from Crypto.Util.Padding import pad
 from Crypto.Random import get_random_bytes
 import os
 
-from Crypto.Cipher import AES
-from Crypto.Util.Padding import pad
-from Crypto.Random import get_random_bytes
-import os
-
 OPCODE_MAP = {
     0: [0x00, "LOAD"],
     1: [0x01, "LOAD-FP"],
@@ -61,7 +56,7 @@ with open("rvemu/src/shuffle.h", "w") as f:
 
 
 # Patch binary
-with open('crack', 'rb') as f:
+with open('crack_riscv', 'rb') as f:
 
     # Get the .text data and offsets
     f.seek(0)
@@ -110,30 +105,20 @@ with open('crack', 'rb') as f:
     original_file_data[start:end] = new_text_data
 
     # Write new ELF file
-    with open('crack', 'wb') as new_f:
+    with open('crack_riscv_patch', 'wb') as new_f:
         new_f.write(original_file_data)
 
 
-## AES Encryption (should be function)
-key = b'my_super_secret_key_1234567890!!' # todo - change this
-encrypted_filename = new_filename + ".enc"
-try:
-    with open(new_filename, 'rb') as f_in:
-        plaintext_data = f_in.read()
+## AES Encryption
+key = b'my_super_secret_key_1234567890!!'
+with open('crack_riscv_patch', 'rb') as f_in:
+    plaintext_data = f_in.read()
 
-    cipher = AES.new(key, AES.MODE_CBC)
+cipher = AES.new(key, AES.MODE_CBC)
+
+encrypted_data = cipher.encrypt(pad(plaintext_data, AES.block_size))
+with open('crack_riscv_enc', 'wb') as f_out:
+    f_out.write(cipher.iv) # 16-byte IV
+    f_out.write(encrypted_data) # ciphertext
     
-    encrypted_data = cipher.encrypt(pad(plaintext_data, AES.block_size))
-    with open(encrypted_filename, 'wb') as f_out:
-        f_out.write(cipher.iv)         # Write the 16-byte IV first
-        f_out.write(encrypted_data) # write the ciphertext
-        
-    print(f"Successfully encrypted '{new_filename}' to '{encrypted_filename}'")
-    # To decrypt, you would read the first 16 bytes (IV),
-    # then decrypt the rest using AES.new(key, AES.MODE_CBC, iv=iv)
-
-except FileNotFoundError:
-    print(f"Error: Could not find file '{new_filename}' to encrypt")
-except Exception as e:
-    print(f"An error occurred during encryption: {e}")
-
+# To decrypt, read the first 16 bytes (IV) then decrypt using AES.new(key, AES.MODE_CBC, iv=iv)

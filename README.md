@@ -14,7 +14,12 @@ make
 ./crack_x86
 
 # Testing
-qemu-riscv64 ./crack_riscv # should fail with illegal instruction
+chmod 777 crack_riscv*
+qemu-riscv64 ./crack_riscv
+qemu-riscv64 ./crack_riscv_patch # should fail with illegal instruction
+qemu-riscv64 ./crack_riscv_enc # should fail with exec format error
+
+# Disassemble
 riscv64-linux-gnu-objdump -D ./crack_riscv > crack_riscv.dis
 ndisasm -b 64 ./crack_x86 > crack_x86.dis
 
