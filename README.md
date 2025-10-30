@@ -7,24 +7,17 @@
 # Ubuntu 25.04
 apt install xxd build-essential qemu-user make clang crossbuild-essential-riscv64 gcc-riscv64-unknown-elf binutils-riscv64-unknown-elf python3 python3-pip python3.12-venv -y
 
-# Venv
-python3 -m venv riscv-venv
-source riscv-venv/bin/activate
-pip install -r requirements.txt
-
 # Build
 make
 
 # Run
-# flag{Risky-Science}
-qemu-riscv64 ./crack_riscv
-./crack_x86
+./crack_me
 
-# Disassemble
+# Testing
 riscv64-linux-gnu-objdump -D ./crack_riscv > crack_riscv.dis
 ndisasm -b 64 ./crack_x86 > crack_x86.dis
+qemu-riscv64 ./crack_riscv
 
 # Clean
 make clean
-rm crack_riscv.dis crack_x86.dis
 ```

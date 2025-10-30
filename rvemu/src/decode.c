@@ -1,4 +1,5 @@
 #include "rvemu.h"
+#include "shuffle.h"
 
 #define QUADRANT(data) (((data) >>  0) & 0x3 )
 
@@ -596,7 +597,6 @@ void insn_decode(insn_t *insn, u32 data) {
         }
     }
     unreachable();
-    // HERE
     case 0x3: {
         u32 opcode = OPCODE(data);
         u32 funct3 = FUNCT3(data);
@@ -605,550 +605,552 @@ void insn_decode(insn_t *insn, u32 data) {
         u32 imm116 = IMM116(data);
         u32 rs2 = RS2(data);
 
-        if (opcode == 0x2 && funct3 == 0x0) { // LOAD, LB
+        int dict[20] = {0x00, 0x01, 0x03, 0x04, 0x05, 0x06, 0x08, 0x09, 0x0c, 0x0d, 0x0e, 0x10, 0x11, 0x12, 0x13, 0x14, 0x18, 0x19, 0x1b, 0x1c};
+
+        if (opcode == dict[shuffle[0]] && funct3 == 0x0) { // LOAD, LB
             *insn = insn_itype_read(data);
             insn->type = insn_lb;
             return;
-        } else if (opcode == 0x2 && funct3 == 0x1) { // LOAD, LH
+        } else if (opcode == dict[shuffle[0]] && funct3 == 0x1) { // LOAD, LH
             *insn = insn_itype_read(data);
             insn->type = insn_lh;
             return;
-        } else if (opcode == 0x2 && funct3 == 0x2) { // LOAD, LW
+        } else if (opcode == dict[shuffle[0]] && funct3 == 0x2) { // LOAD, LW
             *insn = insn_itype_read(data);
             insn->type = insn_lw;
             return;
-        } else if (opcode == 0x2 && funct3 == 0x3) { // LOAD, LD
+        } else if (opcode == dict[shuffle[0]] && funct3 == 0x3) { // LOAD, LD
             *insn = insn_itype_read(data);
             insn->type = insn_ld;
             return;
-        } else if (opcode == 0x2 && funct3 == 0x4) { // LOAD, LBU
+        } else if (opcode == dict[shuffle[0]] && funct3 == 0x4) { // LOAD, LBU
             *insn = insn_itype_read(data);
             insn->type = insn_lbu;
             return;
-        } else if (opcode == 0x2 && funct3 == 0x5) { // LOAD, LHU
+        } else if (opcode == dict[shuffle[0]] && funct3 == 0x5) { // LOAD, LHU
             *insn = insn_itype_read(data);
             insn->type = insn_lhu;
             return;
-        } else if (opcode == 0x2 && funct3 == 0x6) { // LOAD, LWU
+        } else if (opcode == dict[shuffle[0]] && funct3 == 0x6) { // LOAD, LWU
             *insn = insn_itype_read(data);
             insn->type = insn_lwu;
             return;
-        } else if (opcode == 0x1 && funct3 == 0x2) { // FLW
+        } else if (opcode == dict[shuffle[1]] && funct3 == 0x2) { // FLW
             *insn = insn_itype_read(data);
             insn->type = insn_flw;
             return;
-        } else if (opcode == 0x1 && funct3 == 0x3) { // FLD
+        } else if (opcode == dict[shuffle[1]] && funct3 == 0x3) { // FLD
             *insn = insn_itype_read(data);
             insn->type = insn_fld;
             return;
-        } else if (opcode == 0x3 && funct3 == 0x0) { // FENCE
+        } else if (opcode == dict[shuffle[2]] && funct3 == 0x0) { // FENCE
             insn_t _insn = {0};
             *insn = _insn;
             insn->type = insn_fence;
             return;
-        } else if (opcode == 0x3 && funct3 == 0x1) { // FENCE.I
+        } else if (opcode == dict[shuffle[2]] && funct3 == 0x1) { // FENCE.I
             insn_t _insn = {0};
             *insn = _insn;
             insn->type = insn_fence_i;
             return;
-        } else if (opcode == 0x4 && funct3 == 0x0) { // OP-IMM, ADDI
+        } else if (opcode == dict[shuffle[3]] && funct3 == 0x0) { // OP-IMM, ADDI
             *insn = insn_itype_read(data);
             insn->type = insn_addi;
             return;
-        } else if (opcode == 0x4 && funct3 == 0x1 && imm116 == 0) { // OP-IMM, SLLI
+        } else if (opcode == dict[shuffle[3]] && funct3 == 0x1 && imm116 == 0) { // OP-IMM, SLLI
             *insn = insn_itype_read(data);
             insn->type = insn_slli;
             return;
-        } else if (opcode == 0x4 && funct3 == 0x2) { // OP-IMM, SLTI
+        } else if (opcode == dict[shuffle[3]] && funct3 == 0x2) { // OP-IMM, SLTI
             *insn = insn_itype_read(data);
             insn->type = insn_slti;
             return;
-        } else if (opcode == 0x4 && funct3 == 0x3) { // OP-IMM, SLTIU
+        } else if (opcode == dict[shuffle[3]] && funct3 == 0x3) { // OP-IMM, SLTIU
             *insn = insn_itype_read(data);
             insn->type = insn_sltiu;
             return;
-        } else if (opcode == 0x4 && funct3 == 0x4) { // OP-IMM, XORI
+        } else if (opcode == dict[shuffle[3]] && funct3 == 0x4) { // OP-IMM, XORI
             *insn = insn_itype_read(data);
             insn->type = insn_xori;
             return;
-        } else if (opcode == 0x4 && funct3 == 0x5 && imm116 == 0x0) { // OP-IMM, SRLI
+        } else if (opcode == dict[shuffle[3]] && funct3 == 0x5 && imm116 == 0x0) { // OP-IMM, SRLI
             *insn = insn_itype_read(data);
             insn->type = insn_srli;
             return;
-        } else if (opcode == 0x4 && funct3 == 0x5 && imm116 == 0x10) { // OP-IMM, SRAI
+        } else if (opcode == dict[shuffle[3]] && funct3 == 0x5 && imm116 == 0x10) { // OP-IMM, SRAI
             *insn = insn_itype_read(data);
             insn->type = insn_srai;
             return;
-        } else if (opcode == 0x4 && funct3 == 0x6) { // OP-IMM, ORI
+        } else if (opcode == dict[shuffle[3]] && funct3 == 0x6) { // OP-IMM, ORI
             *insn = insn_itype_read(data);
             insn->type = insn_ori;
             return;
-        } else if (opcode == 0x4 && funct3 == 0x7) { // OP-IMM, ANDI
+        } else if (opcode == dict[shuffle[3]] && funct3 == 0x7) { // OP-IMM, ANDI
             *insn = insn_itype_read(data);
             insn->type = insn_andi;
             return;
-        } else if (opcode == 0x5) { // AUIPC
+        } else if (opcode == dict[shuffle[4]]) { // AUIPC
             *insn = insn_utype_read(data);
             insn->type = insn_auipc;
             return;
-        } else if (opcode == 0x6 && funct3 == 0x0) { // ADDIW
+        } else if (opcode == dict[shuffle[5]] && funct3 == 0x0) { // ADDIW
             *insn = insn_itype_read(data);
             insn->type = insn_addiw;
             return;
-        } else if (opcode == 0x6 && funct3 == 0x1) { // SLLIW
+        } else if (opcode == dict[shuffle[5]] && funct3 == 0x1) { // SLLIW
             *insn = insn_itype_read(data);
             assert(funct7 == 0);
             insn->type = insn_slliw;
             return;
-        } else if (opcode == 0x6 && funct3 == 0x5 && funct7 == 0x0) { // SRLIW
+        } else if (opcode == dict[shuffle[5]] && funct3 == 0x5 && funct7 == 0x0) { // SRLIW
             *insn = insn_itype_read(data);
             insn->type = insn_srliw;
             return;
-        } else if (opcode == 0x6 && funct3 == 0x5 && funct7 == 0x20) { // SRAIW
+        } else if (opcode == dict[shuffle[5]] && funct3 == 0x5 && funct7 == 0x20) { // SRAIW
             *insn = insn_itype_read(data);
             insn->type = insn_sraiw;
             return;
-        } else if (opcode == 0x8 && funct3 == 0x0) { // STORE, SB
+        } else if (opcode == dict[shuffle[6]] && funct3 == 0x0) { // STORE, SB
             *insn = insn_stype_read(data);
             insn->type = insn_sb;
             return;
-        } else if (opcode == 0x8 && funct3 == 0x1) { // STORE, SH
+        } else if (opcode == dict[shuffle[6]] && funct3 == 0x1) { // STORE, SH
             *insn = insn_stype_read(data);
             insn->type = insn_sh;
             return;
-        } else if (opcode == 0x8 && funct3 == 0x2) { // STORE, SW
+        } else if (opcode == dict[shuffle[6]] && funct3 == 0x2) { // STORE, SW
             *insn = insn_stype_read(data);
             insn->type = insn_sw;
             return;
-        } else if (opcode == 0x8 && funct3 == 0x3) { // STORE, SD
+        } else if (opcode == dict[shuffle[6]] && funct3 == 0x3) { // STORE, SD
             *insn = insn_stype_read(data);
             insn->type = insn_sd;
             return;
-        } else if (opcode == 0x9 && funct3 == 0x2) { // FSW
+        } else if (opcode == dict[shuffle[7]] && funct3 == 0x2) { // FSW
             *insn = insn_stype_read(data);
             insn->type = insn_fsw;
             return;
-        } else if (opcode == 0x9 && funct3 == 0x3) { // FSD
+        } else if (opcode == dict[shuffle[7]] && funct3 == 0x3) { // FSD
             *insn = insn_stype_read(data);
             insn->type = insn_fsd;
             return;
-        } else if (opcode == 0xc && funct7 == 0x0 && funct3 == 0x0) { // OP, ADD
+        } else if (opcode == dict[shuffle[8]] && funct7 == 0x0 && funct3 == 0x0) { // OP, ADD
             *insn = insn_rtype_read(data);
             insn->type = insn_add;
             return;
-        } else if (opcode == 0xc && funct7 == 0x0 && funct3 == 0x1) { // OP, SLL
+        } else if (opcode == dict[shuffle[8]] && funct7 == 0x0 && funct3 == 0x1) { // OP, SLL
             *insn = insn_rtype_read(data);
             insn->type = insn_sll;
             return;
-        } else if (opcode == 0xc && funct7 == 0x0 && funct3 == 0x2) { // OP, SLT
+        } else if (opcode == dict[shuffle[8]] && funct7 == 0x0 && funct3 == 0x2) { // OP, SLT
             *insn = insn_rtype_read(data);
             insn->type = insn_slt;
             return;
-        } else if (opcode == 0xc && funct7 == 0x0 && funct3 == 0x3) { // OP, SLTU
+        } else if (opcode == dict[shuffle[8]] && funct7 == 0x0 && funct3 == 0x3) { // OP, SLTU
             *insn = insn_rtype_read(data);
             insn->type = insn_sltu;
             return;
-        } else if (opcode == 0xc && funct7 == 0x0 && funct3 == 0x4) { // OP, XOR
+        } else if (opcode == dict[shuffle[8]] && funct7 == 0x0 && funct3 == 0x4) { // OP, XOR
             *insn = insn_rtype_read(data);
             insn->type = insn_xor;
             return;
-        } else if (opcode == 0xc && funct7 == 0x0 && funct3 == 0x5) { // OP, SRL
+        } else if (opcode == dict[shuffle[8]] && funct7 == 0x0 && funct3 == 0x5) { // OP, SRL
             *insn = insn_rtype_read(data);
             insn->type = insn_srl;
             return;
-        } else if (opcode == 0xc && funct7 == 0x0 && funct3 == 0x6) { // OP, OR
+        } else if (opcode == dict[shuffle[8]] && funct7 == 0x0 && funct3 == 0x6) { // OP, OR
             *insn = insn_rtype_read(data);
             insn->type = insn_or;
             return;
-        } else if (opcode == 0xc && funct7 == 0x0 && funct3 == 0x7) { // OP, AND
+        } else if (opcode == dict[shuffle[8]] && funct7 == 0x0 && funct3 == 0x7) { // OP, AND
             *insn = insn_rtype_read(data);
             insn->type = insn_and;
             return;
-        } else if (opcode == 0xc && funct7 == 0x1 && funct3 == 0x0) { // OP, MUL
+        } else if (opcode == dict[shuffle[8]] && funct7 == 0x1 && funct3 == 0x0) { // OP, MUL
             *insn = insn_rtype_read(data);
             insn->type = insn_mul;
             return;
-        } else if (opcode == 0xc && funct7 == 0x1 && funct3 == 0x1) { // OP, MULH
+        } else if (opcode == dict[shuffle[8]] && funct7 == 0x1 && funct3 == 0x1) { // OP, MULH
             *insn = insn_rtype_read(data);
             insn->type = insn_mulh;
             return;
-        } else if (opcode == 0xc && funct7 == 0x1 && funct3 == 0x2) { // OP, MULHSU
+        } else if (opcode == dict[shuffle[8]] && funct7 == 0x1 && funct3 == 0x2) { // OP, MULHSU
             *insn = insn_rtype_read(data);
             insn->type = insn_mulhsu;
             return;
-        } else if (opcode == 0xc && funct7 == 0x1 && funct3 == 0x3) { // OP, MULHU
+        } else if (opcode == dict[shuffle[8]] && funct7 == 0x1 && funct3 == 0x3) { // OP, MULHU
             *insn = insn_rtype_read(data);
             insn->type = insn_mulhu;
             return;
-        } else if (opcode == 0xc && funct7 == 0x1 && funct3 == 0x4) { // OP, DIV
+        } else if (opcode == dict[shuffle[8]] && funct7 == 0x1 && funct3 == 0x4) { // OP, DIV
             *insn = insn_rtype_read(data);
             insn->type = insn_div;
             return;
-        } else if (opcode == 0xc && funct7 == 0x1 && funct3 == 0x5) { // OP, DIVU
+        } else if (opcode == dict[shuffle[8]] && funct7 == 0x1 && funct3 == 0x5) { // OP, DIVU
             *insn = insn_rtype_read(data);
             insn->type = insn_divu;
             return;
-        } else if (opcode == 0xc && funct7 == 0x1 && funct3 == 0x6) { // OP, REM
+        } else if (opcode == dict[shuffle[8]] && funct7 == 0x1 && funct3 == 0x6) { // OP, REM
             *insn = insn_rtype_read(data);
             insn->type = insn_rem;
             return;
-        } else if (opcode == 0xc && funct7 == 0x1 && funct3 == 0x7) { // OP, REMU
+        } else if (opcode == dict[shuffle[8]] && funct7 == 0x1 && funct3 == 0x7) { // OP, REMU
             *insn = insn_rtype_read(data);
             insn->type = insn_remu;
             return;
-        } else if (opcode == 0xc && funct7 == 0x20 && funct3 == 0x0) { // OP, SUB
+        } else if (opcode == dict[shuffle[8]] && funct7 == 0x20 && funct3 == 0x0) { // OP, SUB
             *insn = insn_rtype_read(data);
             insn->type = insn_sub;
             return;
-        } else if (opcode == 0xc && funct7 == 0x20 && funct3 == 0x5) { // OP, SRA
+        } else if (opcode == dict[shuffle[8]] && funct7 == 0x20 && funct3 == 0x5) { // OP, SRA
             *insn = insn_rtype_read(data);
             insn->type = insn_sra;
             return;
-        } else if (opcode == 0xd) { // LUI
+        } else if (opcode == dict[shuffle[9]]) { // LUI
             *insn = insn_utype_read(data);
             insn->type = insn_lui;
             return;
-        } else if (opcode == 0xe && funct7 == 0x0 && funct3 == 0x0) { // ADDW
+        } else if (opcode == dict[shuffle[10]] && funct7 == 0x0 && funct3 == 0x0) { // ADDW
             *insn = insn_rtype_read(data);
             insn->type = insn_addw;
             return;
-        } else if (opcode == 0xe && funct7 == 0x0 && funct3 == 0x1) { // SLLW
+        } else if (opcode == dict[shuffle[10]] && funct7 == 0x0 && funct3 == 0x1) { // SLLW
             *insn = insn_rtype_read(data);
             insn->type = insn_sllw;
             return;
-        } else if (opcode == 0xe && funct7 == 0x0 && funct3 == 0x5) { // SRLW
+        } else if (opcode == dict[shuffle[10]] && funct7 == 0x0 && funct3 == 0x5) { // SRLW
             *insn = insn_rtype_read(data);
             insn->type = insn_srlw;
             return;
-        } else if (opcode == 0xe && funct7 == 0x1 && funct3 == 0x0) { // MULW
+        } else if (opcode == dict[shuffle[10]] && funct7 == 0x1 && funct3 == 0x0) { // MULW
             *insn = insn_rtype_read(data);
             insn->type = insn_mulw;
             return;
-        } else if (opcode == 0xe && funct7 == 0x1 && funct3 == 0x4) { // DIVW
+        } else if (opcode == dict[shuffle[10]] && funct7 == 0x1 && funct3 == 0x4) { // DIVW
             *insn = insn_rtype_read(data);
             insn->type = insn_divw;
             return;
-        } else if (opcode == 0xe && funct7 == 0x1 && funct3 == 0x5) { // DIVUW
+        } else if (opcode == dict[shuffle[10]] && funct7 == 0x1 && funct3 == 0x5) { // DIVUW
             *insn = insn_rtype_read(data);
             insn->type = insn_divuw;
             return;
-        } else if (opcode == 0xe && funct7 == 0x1 && funct3 == 0x6) { // REMW
+        } else if (opcode == dict[shuffle[10]] && funct7 == 0x1 && funct3 == 0x6) { // REMW
             *insn = insn_rtype_read(data);
             insn->type = insn_remw;
             return;
-        } else if (opcode == 0xe && funct7 == 0x1 && funct3 == 0x7) { // REMUW
+        } else if (opcode == dict[shuffle[10]] && funct7 == 0x1 && funct3 == 0x7) { // REMUW
             *insn = insn_rtype_read(data);
             insn->type = insn_remuw;
             return;
-        } else if (opcode == 0xe && funct7 == 0x20 && funct3 == 0x0) { // SUBW
+        } else if (opcode == dict[shuffle[10]] && funct7 == 0x20 && funct3 == 0x0) { // SUBW
             *insn = insn_rtype_read(data);
             insn->type = insn_subw;
             return;
-        } else if (opcode == 0xe && funct7 == 0x20 && funct3 == 0x5) { // SRAW
+        } else if (opcode == dict[shuffle[10]] && funct7 == 0x20 && funct3 == 0x5) { // SRAW
             *insn = insn_rtype_read(data);
             insn->type = insn_sraw;
             return;
-        } else if (opcode == 0x10 && funct2 == 0x0) { // FMADD.S
+        } else if (opcode == dict[shuffle[11]] && funct2 == 0x0) { // FMADD.S
             *insn = insn_fprtype_read(data);
             insn->type = insn_fmadd_s;
             return;
-        } else if (opcode == 0x10 && funct2 == 0x1) { // FMADD.D
+        } else if (opcode == dict[shuffle[11]] && funct2 == 0x1) { // FMADD.D
             *insn = insn_fprtype_read(data);
             insn->type = insn_fmadd_d;
             return;
-        } else if (opcode == 0x11 && funct2 == 0x0) { // FMSUB.S
+        } else if (opcode == dict[shuffle[12]] && funct2 == 0x0) { // FMSUB.S
             *insn = insn_fprtype_read(data);
             insn->type = insn_fmsub_s;
             return;
-        } else if (opcode == 0x11 && funct2 == 0x1) { // FMSUB.D
+        } else if (opcode == dict[shuffle[12]] && funct2 == 0x1) { // FMSUB.D
             *insn = insn_fprtype_read(data);
             insn->type = insn_fmsub_d;
             return;
-        } else if (opcode == 0x12 && funct2 == 0x0) { // FNMSUB.S
+        } else if (opcode == dict[shuffle[13]] && funct2 == 0x0) { // FNMSUB.S
             *insn = insn_fprtype_read(data);
             insn->type = insn_fnmsub_s;
             return;
-        } else if (opcode == 0x12 && funct2 == 0x1) { // FNMSUB.D
+        } else if (opcode == dict[shuffle[13]] && funct2 == 0x1) { // FNMSUB.D
             *insn = insn_fprtype_read(data);
             insn->type = insn_fnmsub_d;
             return;
-        } else if (opcode == 0x13 && funct2 == 0x0) { // FNMADD.S
+        } else if (opcode == dict[shuffle[14]] && funct2 == 0x0) { // FNMADD.S
             *insn = insn_fprtype_read(data);
             insn->type = insn_fnmadd_s;
             return;
-        } else if (opcode == 0x13 && funct2 == 0x1) { // FNMADD.D
+        } else if (opcode == dict[shuffle[14]] && funct2 == 0x1) { // FNMADD.D
             *insn = insn_fprtype_read(data);
             insn->type = insn_fnmadd_d;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x0) { // FADD.S
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x0) { // FADD.S
             *insn = insn_rtype_read(data);
             insn->type = insn_fadd_s;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x1) { // FADD.D
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x1) { // FADD.D
             *insn = insn_rtype_read(data);
             insn->type = insn_fadd_d;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x4) { // FSUB.S
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x4) { // FSUB.S
             *insn = insn_rtype_read(data);
             insn->type = insn_fsub_s;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x5) { // FSUB.D
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x5) { // FSUB.D
             *insn = insn_rtype_read(data);
             insn->type = insn_fsub_d;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x8) { // FMUL.S
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x8) { // FMUL.S
             *insn = insn_rtype_read(data);
             insn->type = insn_fmul_s;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x9) { // FMUL.D
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x9) { // FMUL.D
             *insn = insn_rtype_read(data);
             insn->type = insn_fmul_d;
             return;
-        } else if (opcode == 0x14 && funct7 == 0xc) { // FDIV.S
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0xc) { // FDIV.S
             *insn = insn_rtype_read(data);
             insn->type = insn_fdiv_s;
             return;
-        } else if (opcode == 0x14 && funct7 == 0xd) { // FDIV.D
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0xd) { // FDIV.D
             *insn = insn_rtype_read(data);
             insn->type = insn_fdiv_d;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x10 && funct3 == 0x0) { // FSGNJ.S
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x10 && funct3 == 0x0) { // FSGNJ.S
             *insn = insn_rtype_read(data);
             insn->type = insn_fsgnj_s;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x10 && funct3 == 0x1) { // FSGNJN.S
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x10 && funct3 == 0x1) { // FSGNJN.S
             *insn = insn_rtype_read(data);
             insn->type = insn_fsgnjn_s;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x10 && funct3 == 0x2) { // FSGNJX.S
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x10 && funct3 == 0x2) { // FSGNJX.S
             *insn = insn_rtype_read(data);
             insn->type = insn_fsgnjx_s;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x11 && funct3 == 0x0) { // FSGNJ.D
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x11 && funct3 == 0x0) { // FSGNJ.D
             *insn = insn_rtype_read(data);
             insn->type = insn_fsgnj_d;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x11 && funct3 == 0x1) { // FSGNJN.D
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x11 && funct3 == 0x1) { // FSGNJN.D
             *insn = insn_rtype_read(data);
             insn->type = insn_fsgnjn_d;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x11 && funct3 == 0x2) { // FSGNJX.D
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x11 && funct3 == 0x2) { // FSGNJX.D
             *insn = insn_rtype_read(data);
             insn->type = insn_fsgnjx_d;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x14 && funct3 == 0x0) { // FMIN.S
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x14 && funct3 == 0x0) { // FMIN.S
             *insn = insn_rtype_read(data);
             insn->type = insn_fmin_s;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x14 && funct3 == 0x1) { // FMAX.S
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x14 && funct3 == 0x1) { // FMAX.S
             *insn = insn_rtype_read(data);
             insn->type = insn_fmax_s;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x15 && funct3 == 0x0) { // FMIN.D
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x15 && funct3 == 0x0) { // FMIN.D
             *insn = insn_rtype_read(data);
             insn->type = insn_fmin_d;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x15 && funct3 == 0x1) { // FMAX.D
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x15 && funct3 == 0x1) { // FMAX.D
             *insn = insn_rtype_read(data);
             insn->type = insn_fmax_d;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x20) { // FCVT.S.D
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x20) { // FCVT.S.D
             *insn = insn_rtype_read(data);
             assert(RS2(data) == 1);
             insn->type = insn_fcvt_s_d;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x21) { // FCVT.D.S
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x21) { // FCVT.D.S
             *insn = insn_rtype_read(data);
             assert(RS2(data) == 0);
             insn->type = insn_fcvt_d_s;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x2c) { // FSQRT.S
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x2c) { // FSQRT.S
             *insn = insn_rtype_read(data);
             assert(insn->rs2 == 0);
             insn->type = insn_fsqrt_s;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x2d) { // FSQRT.D
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x2d) { // FSQRT.D
             *insn = insn_rtype_read(data);
             assert(insn->rs2 == 0);
             insn->type = insn_fsqrt_d;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x50 && funct3 == 0x0) { // FLE.S
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x50 && funct3 == 0x0) { // FLE.S
             *insn = insn_rtype_read(data);
             insn->type = insn_fle_s;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x50 && funct3 == 0x1) { // FLT.S
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x50 && funct3 == 0x1) { // FLT.S
             *insn = insn_rtype_read(data);
             insn->type = insn_flt_s;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x50 && funct3 == 0x2) { // FEQ.S
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x50 && funct3 == 0x2) { // FEQ.S
             *insn = insn_rtype_read(data);
             insn->type = insn_feq_s;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x51 && funct3 == 0x0) { // FLE.D
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x51 && funct3 == 0x0) { // FLE.D
             *insn = insn_rtype_read(data);
             insn->type = insn_fle_d;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x51 && funct3 == 0x1) { // FLT.D
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x51 && funct3 == 0x1) { // FLT.D
             *insn = insn_rtype_read(data);
             insn->type = insn_flt_d;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x51 && funct3 == 0x2) { // FEQ.D
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x51 && funct3 == 0x2) { // FEQ.D
             *insn = insn_rtype_read(data);
             insn->type = insn_feq_d;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x60 && rs2 == 0x0) { // FCVT.W.S
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x60 && rs2 == 0x0) { // FCVT.W.S
             *insn = insn_rtype_read(data);
             insn->type = insn_fcvt_w_s;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x60 && rs2 == 0x1) { // FCVT.WU.S
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x60 && rs2 == 0x1) { // FCVT.WU.S
             *insn = insn_rtype_read(data);
             insn->type = insn_fcvt_wu_s;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x60 && rs2 == 0x2) { // FCVT.L.S
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x60 && rs2 == 0x2) { // FCVT.L.S
             *insn = insn_rtype_read(data);
             insn->type = insn_fcvt_l_s;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x60 && rs2 == 0x3) { // FCVT.LU.S
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x60 && rs2 == 0x3) { // FCVT.LU.S
             *insn = insn_rtype_read(data);
             insn->type = insn_fcvt_lu_s;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x61 && rs2 == 0x0) { // FCVT.W.D
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x61 && rs2 == 0x0) { // FCVT.W.D
             *insn = insn_rtype_read(data);
             insn->type = insn_fcvt_w_d;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x61 && rs2 == 0x1) { // FCVT.WU.D
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x61 && rs2 == 0x1) { // FCVT.WU.D
             *insn = insn_rtype_read(data);
             insn->type = insn_fcvt_wu_d;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x61 && rs2 == 0x2) { // FCVT.L.D
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x61 && rs2 == 0x2) { // FCVT.L.D
             *insn = insn_rtype_read(data);
             insn->type = insn_fcvt_l_d;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x61 && rs2 == 0x3) { // FCVT.LU.D
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x61 && rs2 == 0x3) { // FCVT.LU.D
             *insn = insn_rtype_read(data);
             insn->type = insn_fcvt_lu_d;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x68 && rs2 == 0x0) { // FCVT.S.W
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x68 && rs2 == 0x0) { // FCVT.S.W
             *insn = insn_rtype_read(data);
             insn->type = insn_fcvt_s_w;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x68 && rs2 == 0x1) { // FCVT.S.WU
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x68 && rs2 == 0x1) { // FCVT.S.WU
             *insn = insn_rtype_read(data);
             insn->type = insn_fcvt_s_wu;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x68 && rs2 == 0x2) { // FCVT.S.L
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x68 && rs2 == 0x2) { // FCVT.S.L
             *insn = insn_rtype_read(data);
             insn->type = insn_fcvt_s_l;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x68 && rs2 == 0x3) { // FCVT.S.LU
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x68 && rs2 == 0x3) { // FCVT.S.LU
             *insn = insn_rtype_read(data);
             insn->type = insn_fcvt_s_lu;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x69 && rs2 == 0x0) { // FCVT.D.W
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x69 && rs2 == 0x0) { // FCVT.D.W
             *insn = insn_rtype_read(data);
             insn->type = insn_fcvt_d_w;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x69 && rs2 == 0x1) { // FCVT.D.WU
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x69 && rs2 == 0x1) { // FCVT.D.WU
             *insn = insn_rtype_read(data);
             insn->type = insn_fcvt_d_wu;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x69 && rs2 == 0x2) { // FCVT.D.L
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x69 && rs2 == 0x2) { // FCVT.D.L
             *insn = insn_rtype_read(data);
             insn->type = insn_fcvt_d_l;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x69 && rs2 == 0x3) { // FCVT.D.LU
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x69 && rs2 == 0x3) { // FCVT.D.LU
             *insn = insn_rtype_read(data);
             insn->type = insn_fcvt_d_lu;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x70 && funct3 == 0x0) { // FMV.X.W
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x70 && funct3 == 0x0) { // FMV.X.W
             *insn = insn_rtype_read(data);
             assert(RS2(data) == 0);
             insn->type = insn_fmv_x_w;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x70 && funct3 == 0x1) { // FCLASS.S
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x70 && funct3 == 0x1) { // FCLASS.S
             *insn = insn_rtype_read(data);
             assert(RS2(data) == 0);
             insn->type = insn_fclass_s;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x71 && funct3 == 0x0) { // FMV.X.D
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x71 && funct3 == 0x0) { // FMV.X.D
             *insn = insn_rtype_read(data);
             assert(RS2(data) == 0);
             insn->type = insn_fmv_x_d;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x71 && funct3 == 0x1) { // FCLASS.D
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x71 && funct3 == 0x1) { // FCLASS.D
             *insn = insn_rtype_read(data);
             assert(RS2(data) == 0);
             insn->type = insn_fclass_d;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x78) { // FMV_W_X
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x78) { // FMV_W_X
             *insn = insn_rtype_read(data);
             assert(RS2(data) == 0 && FUNCT3(data) == 0);
             insn->type = insn_fmv_w_x;
             return;
-        } else if (opcode == 0x14 && funct7 == 0x79) { // FMV_D_X
+        } else if (opcode == dict[shuffle[15]] && funct7 == 0x79) { // FMV_D_X
             *insn = insn_rtype_read(data);
             assert(RS2(data) == 0 && FUNCT3(data) == 0);
             insn->type = insn_fmv_d_x;
             return;
-        } else if (opcode == 0x18 && funct3 == 0x0) { // BRANCH, BEQ
+        } else if (opcode == dict[shuffle[16]] && funct3 == 0x0) { // BRANCH, BEQ
             *insn = insn_btype_read(data);
             insn->type = insn_beq;
             return;
-        } else if (opcode == 0x18 && funct3 == 0x1) { // BRANCH, BNE
+        } else if (opcode == dict[shuffle[16]] && funct3 == 0x1) { // BRANCH, BNE
             *insn = insn_btype_read(data);
             insn->type = insn_bne;
             return;
-        } else if (opcode == 0x18 && funct3 == 0x4) { // BRANCH, BLT
+        } else if (opcode == dict[shuffle[16]] && funct3 == 0x4) { // BRANCH, BLT
             *insn = insn_btype_read(data);
             insn->type = insn_blt;
             return;
-        } else if (opcode == 0x18 && funct3 == 0x5) { // BRANCH, BGE
+        } else if (opcode == dict[shuffle[16]] && funct3 == 0x5) { // BRANCH, BGE
             *insn = insn_btype_read(data);
             insn->type = insn_bge;
             return;
-        } else if (opcode == 0x18 && funct3 == 0x6) { // BRANCH, BLTU
+        } else if (opcode == dict[shuffle[16]] && funct3 == 0x6) { // BRANCH, BLTU
             *insn = insn_btype_read(data);
             insn->type = insn_bltu;
             return;
-        } else if (opcode == 0x18 && funct3 == 0x7) { // BRANCH, BGEU
+        } else if (opcode == dict[shuffle[16]] && funct3 == 0x7) { // BRANCH, BGEU
             *insn = insn_btype_read(data);
             insn->type = insn_bgeu;
             return;
-        } else if (opcode == 0x19) { // JALR
+        } else if (opcode == dict[shuffle[17]]) { // JALR
             *insn = insn_itype_read(data);
             insn->type = insn_jalr;
             insn->cont = true;
             return;
-        } else if (opcode == 0x1b) { // JAL
+        } else if (opcode == dict[shuffle[18]]) { // JAL
             *insn = insn_jtype_read(data);
             insn->type = insn_jal;
             insn->cont = true;
             return;
-        } else if (opcode == 0x1c && data == 0x73) { // SYSTEM, ECALL
+        } else if (opcode == 0x1C && data == 0x73) { // SYSTEM, ECALL
             insn->type = insn_ecall;
             insn->cont = true;
             return;
-        } else if (opcode == 0x1c && funct3 == 0x1) { // SYSTEM, CSRRW
+        } else if (opcode == 0x1C && funct3 == 0x1) { // SYSTEM, CSRRW
             *insn = insn_csrtype_read(data);
             insn->type = insn_csrrw;
             return;
-        } else if (opcode == 0x1c && funct3 == 0x2) { // SYSTEM, CSRRS
+        } else if (opcode == 0x1C && funct3 == 0x2) { // SYSTEM, CSRRS
             *insn = insn_csrtype_read(data);
             insn->type = insn_csrrs;
             return;
-        } else if (opcode == 0x1c && funct3 == 0x3) { // SYSTEM, CSRRC
+        } else if (opcode == 0x1C && funct3 == 0x3) { // SYSTEM, CSRRC
             *insn = insn_csrtype_read(data);
             insn->type = insn_csrrc;
             return;
-        } else if (opcode == 0x1c && funct3 == 0x5) { // SYSTEM, CSRRWI
+        } else if (opcode == 0x1C && funct3 == 0x5) { // SYSTEM, CSRRWI
             *insn = insn_csrtype_read(data);
             insn->type = insn_csrrwi;
             return;
-        } else if (opcode == 0x1c && funct3 == 0x6) { // SYSTEM, CSRRSI
+        } else if (opcode == 0x1C && funct3 == 0x6) { // SYSTEM, CSRRSI
             *insn = insn_csrtype_read(data);
             insn->type = insn_csrrsi;
             return;
-        } else if (opcode == 0x1c && funct3 == 0x7) { // SYSTEM, CSRRCI
+        } else if (opcode == 0x1C && funct3 == 0x7) { // SYSTEM, CSRRCI
             *insn = insn_csrtype_read(data);
             insn->type = insn_csrrci;
             return;
