@@ -8,7 +8,7 @@ int main(int argc, char *argv[]) {
     machine.cache = new_cache();
     const unsigned char *data = crack;
     size_t size = crack_len;
-    int fd = memfd_create("embedded_program", 0);
+    int fd = memfd_create("embed", 0);
     if (fd < 0) {
         perror("memfd_create");
         return 1;
