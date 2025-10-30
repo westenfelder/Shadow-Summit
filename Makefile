@@ -17,7 +17,7 @@ apt install openssl
 apt install libssl-dev
 endif
 
-CFLAGS := -march=rv64g -O0 -static -nostdlib
+CFLAGS := -march=rv64g -O0 -static -nostdlib -s
 
 all:
 	if [ ! -e "crack" ]; then $(CC) $(CFLAGS) -o crack main.c; fi
