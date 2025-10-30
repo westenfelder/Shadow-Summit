@@ -62,7 +62,7 @@ int main() {
     char read_buffer[128];
     long bytes_read = sys_read(0, read_buffer, 128);
 
-    if (bytes_read == 6 && sys_memcmp(read_buffer, "riscv\n", 6) == 0) {
+    if (bytes_read == 20 && sys_memcmp(read_buffer, "flag{Risky-Science}\n", 20) == 0) {
         const char *correct_msg = "Correct\n";
         sys_write(1, correct_msg, 8);
     } else {

@@ -5,15 +5,19 @@
 ## Setup
 ```bash
 # Ubuntu 25.04
-apt install build-essential qemu-user make clang crossbuild-essential-riscv64 gcc-riscv64-unknown-elf binutils-riscv64-unknown-elf -y
+apt install xxd build-essential qemu-user make clang crossbuild-essential-riscv64 gcc-riscv64-unknown-elf binutils-riscv64-unknown-elf python3 python3-pip python3.12-venv -y
 
 # Build
 make
 
 # Run
-qemu-riscv64 ./crack_riscv
-./crack_x86
+./crack_me
 
-# Disassemble
-riscv64-linux-gnu-objdump -D ./test > test.dis
+# Testing
+riscv64-linux-gnu-objdump -D ./crack_riscv > crack_riscv.dis
+ndisasm -b 64 ./crack_x86 > crack_x86.dis
+qemu-riscv64 ./crack_riscv
+
+# Clean
+make clean
 ```

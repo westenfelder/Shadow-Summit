@@ -4,6 +4,8 @@
 !Makefile
 !main.go
 !main.c
+!main.py
+!requirements.txt
 !rvemu/
 !rvemu/Makefile
 !rvemu/.clang-format
