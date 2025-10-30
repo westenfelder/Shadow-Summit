@@ -9,6 +9,14 @@ else
 $(error Neither "riscv64-unknown-elf-gcc" nor "riscv64-elf-gcc" found. Install a RISC-V cross-compiler.)
 endif
 
+# check opensll is installed
+ifeq ($(shell command -v openssl >/dev/null 2>&1 && echo yes),yes)
+# openssl already installed
+else # assuming apt package manager
+apt install openssl
+apt install libssl-dev
+endif
+
 CFLAGS := -march=rv64g -O0 -static -nostdlib
 
 all:
@@ -16,6 +24,7 @@ all:
 	python3 -m venv riscv-venv && \
 	riscv-venv/bin/pip install -r requirements.txt && \
 	riscv-venv/bin/python3 main.py
+	mv crack crack.orig && cp crack.enc crack
 	xxd -i crack > crack.h
 	mv crack.h rvemu/src/crack.h
 	cd rvemu && make -j
