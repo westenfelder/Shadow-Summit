@@ -9,14 +9,6 @@ else
 $(error Neither "riscv64-unknown-elf-gcc" nor "riscv64-elf-gcc" found. Install a RISC-V cross-compiler.)
 endif
 
-# check opensll is installed
-ifeq ($(shell command -v openssl >/dev/null 2>&1 && echo yes),yes)
-# openssl already installed
-else # assuming apt package manager
-apt install openssl
-apt install libssl-dev
-endif
-
 CFLAGS := -march=rv64g -O0 -static -nostdlib -s
 
 all:
