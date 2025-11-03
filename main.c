@@ -4,6 +4,7 @@
 #define ALWAYS_INLINE inline __attribute__((always_inline))
 
 typedef unsigned int uint32_t;
+typedef unsigned char uint8_t;
 
 asm(
     ".section .text\n"
@@ -64,6 +65,35 @@ void xor_string(char *data, long len, char key) {
     }
 }
 
+//churn function, rotat, xor, rotate xor 
+#include <stdint.h>
+#include <stddef.h>
+
+// Rotate left and right for a byte
+static inline uint8_t rol8(uint8_t val, int r_bits) {
+    r_bits %= 8;
+    return (val << r_bits) | (val >> (8 - r_bits));
+}
+
+static inline uint8_t ror8(uint8_t val, int r_bits) {
+    r_bits %= 8;
+    return (val >> r_bits) | (val << (8 - r_bits));
+}
+
+// 
+void churn(uint8_t *data, int len, uint8_t key1, uint8_t key2) {
+    for (int i = 0; i < len; ++i) {
+        // Step 1: rotate right by 13 (mod 8)
+        data[i] = ror8(data[i], 13);
+        data[i] ^= key1;
+
+        // rotate left by 7
+        data[i] = rol8(data[i], 7);
+        data[i] ^= key2;
+    }
+}
+
+
 ALWAYS_INLINE static uint32_t simple_hash(char *data, int len)
 {
     const unsigned char *bytes = (const unsigned char *)data;
@@ -101,27 +131,28 @@ void print_int(uint32_t input){
 }
 
 int main() {
+    long flag_len = 19;
+    uint8_t key_1 = 0x67;
+    uint8_t key_2 = 0x21;
+    uint8_t encoded_flag[] = { 0x0b, 0x23, 0x17, 0x0f, 0x7f, 0xdb, 0x37, 0x5f, 0x3f, 0x77, 0x26, 0xdf, 0x1f, 0x37, 0x07, 0x2b, 0x1f, 0x07, 0x67 };
+
     const char *message = "Input: ";
     sys_write(1, message, 7);
 
-    char key = 0x42;
-    long flag_len = 20;
-
     char read_buffer[128];
     long bytes_read = sys_read(0, read_buffer, 128);
+    churn(read_buffer, flag_len, key_1, key_2);
 
-    // New Comparison: flag{Risky-Science}
-    uint32_t target_digest = 3030167379; // digest of flag
-    uint32_t input_digest = simple_hash(read_buffer,flag_len);
-    
-    print_int(input_digest);
-    print_int(target_digest);
+    uint32_t orig_flag = simple_hash(read_buffer, flag_len);
+    uint32_t py_flag = simple_hash(encoded_flag,flag_len);
+    print_int(orig_flag);
+    print_int(py_flag);
 
-    if(sys_memcmp(&target_digest, &input_digest, 4) == 0) {
-        const char *correct_msg = "Correct Hash\n";
+    if(sys_memcmp(encoded_flag, read_buffer, flag_len) == 0) {
+        const char *correct_msg = "Correct Flag\n";
         sys_write(1, correct_msg, 13);
     } else {
-        const char *false_msg = "Incorrect Hash\n";
+        const char *false_msg = "Incorrect Flag\n";
         sys_write(1, false_msg, 15);
     }
 
