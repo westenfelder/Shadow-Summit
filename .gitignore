@@ -10,3 +10,4 @@
 !rvemu/.clang-format
 !rvemu/src
 !rvemu/src/*
+!python_execute.py

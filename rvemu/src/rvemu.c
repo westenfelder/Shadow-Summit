@@ -30,9 +30,9 @@ int pkcs7_unpad(uint8_t *data, int data_len) {
     return data_len - padding_len;
 }
 
-int decrypt(unsigned char **data_out) {
+int decrypt(unsigned char **data_out, uint8_t * key) {
 
-    uint8_t *key = (uint8_t *)"my_super_secret_key_1234567890!!";
+    // uint8_t *key = (uint8_t *)"my_super_secret_key_1234567890!!";
     
     // The IV is the first 16 bytes of the array
     uint8_t *iv = crack_riscv_enc; 
@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
     // const unsigned char *data = crack;
     // size_t size = crack_len;
     unsigned char *data = NULL;
-    size_t size = decrypt(&data);
+    size_t size = decrypt(&data, __key);
     int fd = memfd_create("embed", 0);
     if (fd < 0) {
         perror("memfd_create");
