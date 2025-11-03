@@ -1,6 +1,9 @@
 #define __NR_read 63
 #define __NR_write 64
 #define __NR_exit_group 94
+#define ALWAYS_INLINE inline __attribute__((always_inline))
+
+typedef unsigned int uint32_t;
 
 asm(
     ".section .text\n"
@@ -61,30 +64,65 @@ void xor_string(char *data, long len, char key) {
     }
 }
 
+ALWAYS_INLINE static uint32_t simple_hash(char *data, int len)
+{
+    const unsigned char *bytes = (const unsigned char *)data;
+    uint32_t hash = 0x9747b28c; // arbitrary seed (can change)
+    uint32_t prime = 0x9e3779b1; // large prime for mixing
+
+    for (int i = 0; i < len; ++i) {
+        hash ^= bytes[i];
+        hash *= prime;
+        hash ^= hash >> 15;
+    }
+
+    // final avalanche
+    hash ^= hash >> 16;
+    hash *= 0x85ebca6b;
+    hash ^= hash >> 13;
+    hash *= 0xc2b2ae35;
+    hash ^= hash >> 16;
+
+    return hash;
+}
+
+void print_int(uint32_t input){
+    char buffer[32] = {0};
+    int i = 30;
+    buffer[31] = '\n'; // newline at the end
+    buffer[30] = '\0';
+
+     while (input > 0 && i > 0) {
+        buffer[i--] = '0' + (input % 10);
+        input /= 10;
+    }
+    sys_write(1, &buffer[i + 1], 11);
+
+}
+
 int main() {
     const char *message = "Input: ";
     sys_write(1, message, 7);
 
-    // flag{Risky-Science}
-    char encoded_flag[] = {
-        0x24, 0x2e, 0x23, 0x25, 0x39, 0x10, 0x2b, 0x31, 0x29, 0x3b,
-        0x6f, 0x11, 0x21, 0x2b, 0x27, 0x2c, 0x21, 0x27, 0x3f, 0x48
-    };
-    
     char key = 0x42;
     long flag_len = 20;
 
     char read_buffer[128];
     long bytes_read = sys_read(0, read_buffer, 128);
 
-    xor_string(encoded_flag, flag_len, key);
+    // New Comparison: flag{Risky-Science}
+    uint32_t target_digest = 3030167379; // digest of flag
+    uint32_t input_digest = simple_hash(read_buffer,flag_len);
+    
+    print_int(input_digest);
+    print_int(target_digest);
 
-    if (bytes_read == flag_len && sys_memcmp(read_buffer, encoded_flag, flag_len) == 0) {
-        const char *correct_msg = "Correct\n";
-        sys_write(1, correct_msg, 8);
+    if(sys_memcmp(&target_digest, &input_digest, 4) == 0) {
+        const char *correct_msg = "Correct Hash\n";
+        sys_write(1, correct_msg, 13);
     } else {
-        const char *false_msg = "Incorrect\n";
-        sys_write(1, false_msg, 10);
+        const char *false_msg = "Incorrect Hash\n";
+        sys_write(1, false_msg, 15);
     }
 
     return 0;
