@@ -11,3 +11,4 @@
 !rvemu/src
 !rvemu/src/*
 !python_execute.py
+!flag_gen.py
