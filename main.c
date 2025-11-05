@@ -1,6 +1,10 @@
 #define __NR_read 63
 #define __NR_write 64
 #define __NR_exit_group 94
+#define ALWAYS_INLINE inline __attribute__((always_inline))
+
+typedef unsigned int uint32_t;
+typedef unsigned char uint8_t;
 
 asm(
     ".section .text\n"
@@ -61,30 +65,48 @@ void xor_string(char *data, long len, char key) {
     }
 }
 
+// Rotate left and right for a byte
+static inline uint8_t rol8(uint8_t val, int r_bits) {
+    r_bits %= 8;
+    return (val << r_bits) | (val >> (8 - r_bits));
+}
+static inline uint8_t ror8(uint8_t val, int r_bits) {
+    r_bits %= 8;
+    return (val >> r_bits) | (val << (8 - r_bits));
+}
+
+// logic for ensuring the correct flag is provided
+void churn(uint8_t *data, int len, uint8_t key1, uint8_t key2) {
+    for (int i = 0; i < len; ++i) {
+        // Step 1: rotate right by 13 (mod 8)
+        data[i] = ror8(data[i], 13);
+        data[i] ^= key1;
+
+        // rotate left by 7
+        data[i] = rol8(data[i], 7);
+        data[i] ^= key2;
+    }
+}
+
 int main() {
+    long flag_len = 19;
+    uint8_t key_1 = 0x67;
+    uint8_t key_2 = 0x21;
+    uint8_t encoded_flag[] = { 0x0b, 0x23, 0x17, 0x0f, 0x7f, 0xdb, 0x37, 0x5f, 0x3f, 0x77, 0x26, 0xdf, 0x1f, 0x37, 0x07, 0x2b, 0x1f, 0x07, 0x67 };
+
     const char *message = "Input: ";
     sys_write(1, message, 7);
 
-    // flag{Risky-Science}
-    char encoded_flag[] = {
-        0x24, 0x2e, 0x23, 0x25, 0x39, 0x10, 0x2b, 0x31, 0x29, 0x3b,
-        0x6f, 0x11, 0x21, 0x2b, 0x27, 0x2c, 0x21, 0x27, 0x3f, 0x48
-    };
-    
-    char key = 0x42;
-    long flag_len = 20;
-
     char read_buffer[128];
     long bytes_read = sys_read(0, read_buffer, 128);
+    churn(read_buffer, flag_len, key_1, key_2);
 
-    xor_string(encoded_flag, flag_len, key);
-
-    if (bytes_read == flag_len && sys_memcmp(read_buffer, encoded_flag, flag_len) == 0) {
-        const char *correct_msg = "Correct\n";
-        sys_write(1, correct_msg, 8);
+    if(sys_memcmp(encoded_flag, read_buffer, flag_len) == 0) {
+        const char *correct_msg = "Correct Flag\n";
+        sys_write(1, correct_msg, 13);
     } else {
-        const char *false_msg = "Incorrect\n";
-        sys_write(1, false_msg, 10);
+        const char *false_msg = "Incorrect Flag\n";
+        sys_write(1, false_msg, 15);
     }
 
     return 0;
