@@ -5,7 +5,7 @@
 ## Setup
 ### Docker
 `docker pull pr1or1tyq/riscv_env:1.0`
-`docker run -v </repo/path> -it pr1or1tyq/riscv_env:1.0 /bin/bash`
+`docker run --mount type=bind,src=</path/to/repo>,dst=/root/proj -it pr1or1tyq/riscv_env:1.0 /bin/bash`
 
 ```bash
 # Ubuntu 25.04
