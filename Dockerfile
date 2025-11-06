@@ -8,6 +8,8 @@ RUN apt-get update && apt-get install -y \
     libmpc-dev libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo \
     gperf libtool patchutils bc zlib1g-dev libexpat-dev ninja-build git cmake libglib2.0-dev libslirp-dev \
  && rm -rf /var/lib/apt/lists/*
+RUN apt update -y && apt upgrade -y
+RUN apt install python3-venv -y
 
 # Set environment variables
 ENV RISCV=/opt/riscv
