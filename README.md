@@ -3,6 +3,10 @@
 - https://fmash16.github.io/content/posts/riscv-emulator-in-c.html
 
 ## Setup
+### Docker
+`docker pull pr1or1tyq/riscv_env:1.0`
+`docker run -v </repo/path> -it pr1or1tyq/riscv_env:1.0 /bin/bash`
+
 ```bash
 # Ubuntu 25.04
 apt install xxd build-essential qemu-user make clang crossbuild-essential-riscv64 gcc-riscv64-unknown-elf binutils-riscv64-unknown-elf python3.12 python3-pip python3.12-venv gdb gdbserver nasm -y

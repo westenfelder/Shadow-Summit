@@ -38,6 +38,7 @@ RUN rm -rf ${TOOL_LOC}
 #RUN rm -f ${TEST_LOC}/test_build.py
 
 WORKDIR /root
+#COPY /root/repo/Shadow-Summit ./risky_biz
 
 # show version info when complete
 CMD ["riscv64-unknown-elf-gcc", "--version"]
